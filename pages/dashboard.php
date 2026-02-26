@@ -64,6 +64,7 @@ $user = ['full_name' => $_SESSION['admin_email'] ?? 'Admin'];
 <title>Dashboard - Admin</title>
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/navbar.css">
+<link rel="stylesheet" href="../css/components.css">
 <link rel="stylesheet" href="../css/dashboard.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -82,91 +83,83 @@ $user_name = $user['full_name'] ?? '';
       <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
     </div>
     
-    <div class="cards">
-      <div class="card card-total">
-        <h3>Total Submissions</h3>
+    <div class="stats-cards">
+      <div class="stat-card stat-card-primary">
+        <h3><i class="fas fa-file-alt"></i> Total Submissions</h3>
         <p><?php echo $stats ? $stats['total'] : '0'; ?></p>
-        <small style="color: #666; font-size: 12px;">Total: 245 submissions</small>
       </div>
-      <div class="card card-pending">
-        <h3>Pending</h3>
+      <div class="stat-card stat-card-warnings">
+        <h3><i class="fas fa-hourglass-half"></i> Pending</h3>
         <p><?php echo $stats ? $stats['pending'] : '0'; ?></p>
-        <small style="color: #666; font-size: 12px;">Awaiting Review: 42</small>
       </div>
-      <div class="card card-approved">
-        <h3>Approved</h3>
+      <div class="stat-card stat-card-success">
+        <h3><i class="fas fa-check-circle"></i> Approved</h3>
         <p><?php echo $stats ? $stats['approved'] : '0'; ?></p>
-        <small style="color: #666; font-size: 12px;">Successfully Approved: 178</small>
       </div>
-      <div class="card card-rejected">
-        <h3>Rejected</h3>
+      <div class="stat-card stat-card-warning">
+        <h3><i class="fas fa-times-circle"></i> Rejected</h3>
         <p><?php echo $stats ? $stats['rejected'] : '0'; ?></p>
-        <small style="color: #666; font-size: 12px;">Not Approved: 25</small>
       </div>
     </div>
 
     <div class="table-container">
-      <h2>Recent Submissions</h2>
+      <h3 style="font-size: 18px; font-weight: 700; color: #047857; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><i class="fas fa-history"></i> Recent Submissions</h3>
       <table>
         <thead>
           <tr>
-            <th>Ref No</th>
-            <th>Organization</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Date</th>
+            <th><i class="fas fa-hashtag"></i> Ref No</th>
+            <th><i class="fas fa-building"></i> Organization</th>
+            <th><i class="fas fa-file-alt"></i> Title</th>
+            <th><i class="fas fa-tag"></i> Status</th>
+            <th><i class="fas fa-calendar"></i> Date</th>
           </tr>
         </thead>
         <tbody>
           <?php if (!empty($recent_submissions)): ?>
             <?php foreach ($recent_submissions as $index => $submission): ?>
               <tr>
-                <td><?php echo str_pad($index + 1, 3, '0', STR_PAD_LEFT); ?></td>
+                <td class="ref-number">#<?php echo str_pad($index + 1, 3, '0', STR_PAD_LEFT); ?></td>
                 <td><?php echo htmlspecialchars($submission['org_name'] ?? 'N/A'); ?></td>
-                <td><?php echo htmlspecialchars($submission['title']); ?></td>
-                <td>
-                  <span class="status <?php echo strtolower($submission['status']); ?>">
-                    <?php echo ucfirst($submission['status']); ?>
-                  </span>
-                </td>
+                <td class="title-cell"><strong><?php echo htmlspecialchars($submission['title']); ?></strong></td>
+                <td><span class="status-badge <?php echo strtolower($submission['status']); ?>"><i class="fas fa-circle"></i> <?php echo ucfirst(str_replace('_', ' ', $submission['status'])); ?></span></td>
                 <td><?php echo date('M d, Y', strtotime($submission['submitted_at'])); ?></td>
               </tr>
             <?php endforeach; ?>
           <?php else: ?>
             <!-- Sample Data -->
             <tr>
-              <td>001</td>
+              <td class="ref-number">#001</td>
               <td>Tech Innovations Inc.</td>
-              <td>Digital Transformation Initiative 2026</td>
-              <td><span class="status approved">Approved</span></td>
+              <td class="title-cell"><strong>Digital Transformation Initiative 2026</strong></td>
+              <td><span class="status-badge approved"><i class="fas fa-circle"></i> Approved</span></td>
               <td>Feb 25, 2026</td>
             </tr>
             <tr>
-              <td>002</td>
+              <td class="ref-number">#002</td>
               <td>Global Solutions Ltd.</td>
-              <td>Cloud Infrastructure Upgrade</td>
-              <td><span class="status pending">Pending</span></td>
+              <td class="title-cell"><strong>Cloud Infrastructure Upgrade</strong></td>
+              <td><span class="status-badge pending"><i class="fas fa-circle"></i> Pending</span></td>
               <td>Feb 26, 2026</td>
             </tr>
             <tr>
-              <td>003</td>
+              <td class="ref-number">#003</td>
               <td>Future Systems Corp.</td>
-              <td>AI Integration Project Phase 1</td>
-              <td><span class="status approved">Approved</span></td>
+              <td class="title-cell"><strong>AI Integration Project Phase 1</strong></td>
+              <td><span class="status-badge approved"><i class="fas fa-circle"></i> Approved</span></td>
               <td>Feb 24, 2026</td>
             </tr>
             <tr>
-              <td>004</td>
+              <td class="ref-number">#004</td>
               <td>Enterprise Solutions Group</td>
-              <td>Security Enhancement Program</td>
-              <td><span class="status rejected">Rejected</span></td>
+              <td class="title-cell"><strong>Security Enhancement Program</strong></td>
+              <td><span class="status-badge rejected"><i class="fas fa-circle"></i> Rejected</span></td>
               <td>Feb 23, 2026</td>
             </tr>
             <tr>
-              <td>005</td>
+              <td class="ref-number">#005</td>
               <td>Digital Dynamics Ltd.</td>
-              <td>Mobile App Development Framework</td>
-              <td><span class="status pending">Pending</span></td>
+              <td class="title-cell"><strong>Mobile App Development Framework</strong></td>
+              <td><span class="status-badge pending"><i class="fas fa-circle"></i> Pending</span></td>
               <td>Feb 22, 2026</td>
             </tr>
           <?php endif; ?>

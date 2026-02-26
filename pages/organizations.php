@@ -65,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 <title>Organizations - Admin</title>
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/navbar.css">
+<link rel="stylesheet" href="../css/components.css">
 <link rel="stylesheet" href="../css/organizations.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -83,55 +84,64 @@ $user_name = $user['full_name'] ?? '';
     </div>
     
     <?php if (isset($_GET['success'])): ?>
-    <div style="background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
-      ✓ Organization created successfully!
+    <div class="success-alert">
+      <i class="fas fa-check-circle"></i>
+      <span>Organization created successfully!</span>
     </div>
     <?php endif; ?>
 
     <?php if (!empty($error_message)): ?>
-    <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
-      ✗ <?php echo htmlspecialchars($error_message); ?>
+    <div class="error-alert">
+      <i class="fas fa-exclamation-circle"></i>
+      <span><?php echo htmlspecialchars($error_message); ?></span>
     </div>
     <?php endif; ?>
 
-    <button onclick="showCreateOrg()" class="create-btn" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 20px;">+ Create Organization</button>
+    <button onclick="showCreateOrg()" class="btn-action btn-view" style="margin-bottom: 20px;"><i class="fas fa-plus"></i> Create Organization</button>
     
     <div class="table-container">
       <table>
         <thead>
           <tr>
-            <th>Organization Name</th>
-            <th>Code</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th>Submissions</th>
-            <th>Created By</th>
-            <th>Action</th>
+            <th><i class="fas fa-building"></i> Organization Name</th>
+            <th><i class="fas fa-code"></i> Code</th>
+            <th><i class="fas fa-envelope"></i> Email</th>
+            <th><i class="fas fa-info-circle"></i> Status</th>
+            <th><i class="fas fa-file-alt"></i> Submissions</th>
+            <th><i class="fas fa-user"></i> Created By</th>
+            <th><i class="fas fa-cog"></i> Action</th>
           </tr>
         </thead>
         <tbody id="orgTable">
           <?php if (!empty($organizations)): ?>
             <?php foreach ($organizations as $org): ?>
               <tr>
-                <td><?php echo htmlspecialchars($org['org_name']); ?></td>
-                <td><?php echo htmlspecialchars($org['org_code']); ?></td>
+                <td class="title-cell"><strong><?php echo htmlspecialchars($org['org_name']); ?></strong></td>
+                <td><span style="font-weight: 600; color: #10b981;"><?php echo htmlspecialchars($org['org_code']); ?></span></td>
                 <td><?php echo htmlspecialchars($org['email'] ?? 'N/A'); ?></td>
                 <td>
-                  <span style="padding: 4px 8px; border-radius: 4px; background-color: <?php echo $org['status'] === 'active' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $org['status'] === 'active' ? '#155724' : '#721c24'; ?>;">
-                    <?php echo ucfirst($org['status']); ?>
+                  <span class="status-badge <?php echo strtolower($org['status']); ?>">
+                    <i class="fas fa-circle"></i> <?php echo ucfirst($org['status']); ?>
                   </span>
                 </td>
-                <td><?php echo $org['submission_count'] ?? 0; ?></td>
+                <td><span class="badge-count"><?php echo $org['submission_count'] ?? 0; ?></span></td>
                 <td><?php echo $org['created_by'] === 1 ? 'Admin' : 'System'; ?></td>
                 <td>
-                  <a href="organizations.php?view=<?php echo $org['org_id']; ?>" style="color: #007bff; text-decoration: none; margin-right: 10px;">View</a>
-                  <a href="organizations.php?edit=<?php echo $org['org_id']; ?>" style="color: #ffc107; text-decoration: none;">Edit</a>
+                  <div class="action-buttons">
+                    <a href="organizations.php?view=<?php echo $org['org_id']; ?>" class="btn-action btn-view"><i class="fas fa-eye"></i> View</a>
+                    <a href="organizations.php?edit=<?php echo $org['org_id']; ?>" class="btn-action btn-download"><i class="fas fa-edit"></i> Edit</a>
+                  </div>
                 </td>
               </tr>
             <?php endforeach; ?>
           <?php else: ?>
             <tr>
-              <td colspan="7" style="text-align: center; color: #999;">No organizations found</td>
+              <td colspan="7" class="empty-row">
+                <div class="empty-state">
+                  <i class="fas fa-inbox"></i>
+                  <p>No organizations found</p>
+                </div>
+              </td>
             </tr>
           <?php endif; ?>
         </tbody>

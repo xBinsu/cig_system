@@ -62,6 +62,7 @@ try {
 <title>Document Archive - Admin</title>
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/navbar.css">
+<link rel="stylesheet" href="../css/components.css">
 <link rel="stylesheet" href="../css/archive.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -103,72 +104,74 @@ $user_name = $user['full_name'] ?? '';
 
     <!-- REJECTED SUBMISSIONS -->
     <div>
-      <h3>Rejected Submissions (<?php echo count($rejected_submissions); ?>)</h3>
+      <h3 style="font-size: 18px; font-weight: 700; color: #047857; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px;"><i class="fas fa-trash"></i> Rejected Submissions (<?php echo count($rejected_submissions); ?>)</h3>
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>Ref No</th>
-              <th>Title</th>
-              <th>Organization</th>
-              <th>Submitted By</th>
-              <th>Submission Date</th>
-              <th>Rejected Date</th>
-              <th>Action</th>
+              <th><i class="fas fa-hashtag"></i> Ref No</th>
+              <th><i class="fas fa-file-alt"></i> Title</th>
+              <th><i class="fas fa-building"></i> Organization</th>
+              <th><i class="fas fa-user"></i> Submitted By</th>
+              <th><i class="fas fa-calendar"></i> Submission Date</th>
+              <th><i class="fas fa-ban"></i> Rejected Date</th>
+              <th><i class="fas fa-cog"></i> Action</th>
             </tr>
           </thead>
           <tbody>
             <?php if (!empty($rejected_submissions)): ?>
               <?php foreach ($rejected_submissions as $index => $submission): ?>
                 <tr>
-                  <td><?php echo str_pad($index + 1, 3, '0', STR_PAD_LEFT); ?></td>
-                  <td><?php echo htmlspecialchars($submission['title']); ?></td>
+                  <td class="ref-number">#<?php echo str_pad($index + 1, 3, '0', STR_PAD_LEFT); ?></td>
+                  <td class="title-cell"><strong><?php echo htmlspecialchars($submission['title']); ?></strong></td>
                   <td><?php echo htmlspecialchars($submission['org_name'] ?? 'N/A'); ?></td>
                   <td><?php echo htmlspecialchars($submission['submitted_by_name'] ?? 'N/A'); ?></td>
                   <td><?php echo date('M d, Y', strtotime($submission['submitted_at'])); ?></td>
                   <td><?php echo date('M d, Y', strtotime($submission['updated_at'])); ?></td>
                   <td>
-                    <a href="archive.php?view=<?php echo $submission['submission_id']; ?>" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a>
+                    <div class="action-buttons">
+                      <a href="archive.php?view=<?php echo $submission['submission_id']; ?>" class="btn-action btn-view" title="View Details"><i class="fas fa-eye"></i> View</a>
+                    </div>
                   </td>
                 </tr>
               <?php endforeach; ?>
             <?php else: ?>
               <!-- Sample Rejected Submissions -->
               <tr>
-                <td>001</td>
-                <td>Incomplete Project Documentation</td>
+                <td class="ref-number">#001</td>
+                <td class="title-cell"><strong>Incomplete Project Documentation</strong></td>
                 <td>Research Department</td>
                 <td>John Smith</td>
                 <td>Feb 20, 2026</td>
                 <td>Feb 21, 2026</td>
-                <td><a href="#" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a></td>
+                <td><div class="action-buttons"><a href="#" class="btn-action btn-view" title="View Details"><i class="fas fa-eye"></i> View</a></div></td>
               </tr>
               <tr>
-                <td>002</td>
-                <td>Budget Proposal - Missing Approvals</td>
+                <td class="ref-number">#002</td>
+                <td class="title-cell"><strong>Budget Proposal - Missing Approvals</strong></td>
                 <td>Finance Committee</td>
                 <td>Sarah Johnson</td>
                 <td>Feb 18, 2026</td>
                 <td>Feb 19, 2026</td>
-                <td><a href="#" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a></td>
+                <td><div class="action-buttons"><a href="#" class="btn-action btn-view" title="View Details"><i class="fas fa-eye"></i> View</a></div></td>
               </tr>
               <tr>
-                <td>003</td>
-                <td>Facilities Maintenance Request</td>
+                <td class="ref-number">#003</td>
+                <td class="title-cell"><strong>Facilities Maintenance Request</strong></td>
                 <td>Operations Team</td>
                 <td>Michael Chen</td>
                 <td>Feb 15, 2026</td>
                 <td>Feb 16, 2026</td>
-                <td><a href="#" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a></td>
+                <td><div class="action-buttons"><a href="#" class="btn-action btn-view" title="View Details"><i class="fas fa-eye"></i> View</a></div></td>
               </tr>
               <tr>
-                <td>004</td>
-                <td>Event Proposal - Insufficient Details</td>
+                <td class="ref-number">#004</td>
+                <td class="title-cell"><strong>Event Proposal - Insufficient Details</strong></td>
                 <td>Student Activities</td>
                 <td>Emma Wilson</td>
                 <td>Feb 12, 2026</td>
                 <td>Feb 13, 2026</td>
-                <td><a href="#" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a></td>
+                <td><div class="action-buttons"><a href="#" class="btn-action btn-view" title="View Details"><i class="fas fa-eye"></i> View</a></div></td>
               </tr>
             <?php endif; ?>
           </tbody>
@@ -180,136 +183,7 @@ $user_name = $user['full_name'] ?? '';
 </div>
 
 <style>
-.search-filter-container {
-  margin-bottom: 30px;
-  padding: 20px 24px;
-  background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
-  border: 1px solid rgba(0, 123, 255, 0.15);
-}
-
-.search-filter-form {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  max-width: 100%;
-  flex-wrap: wrap;
-}
-
-.search-input-wrapper {
-  flex: 1;
-  min-width: 280px;
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-icon {
-  position: absolute;
-  left: 16px;
-  color: #007bff;
-  font-size: 18px;
-  pointer-events: none;
-  transition: all 0.3s ease;
-}
-
-.search-input {
-  flex: 1;
-  padding: 12px 14px 12px 45px;
-  border: 2px solid #e8eef9;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  background: white;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #007bff;
-  background: white;
-  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.12), 0 4px 12px rgba(0, 123, 255, 0.15);
-}
-
-.search-input::placeholder {
-  color: #a8b5c8;
-  font-weight: 400;
-}
-
-.filter-select {
-  padding: 12px 14px;
-  border: 2px solid #e8eef9;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 500;
-  background: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #333;
-}
-
-.filter-select:focus {
-  outline: none;
-  border-color: #007bff;
-  background: white;
-  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.12), 0 4px 12px rgba(0, 123, 255, 0.15);
-}
-
-.btn-search {
-  padding: 12px 20px;
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-  white-space: nowrap;
-}
-
-.btn-search:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
-  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-}
-
-.btn-search:active {
-  transform: translateY(-1px);
-}
-
-.btn-clear {
-  padding: 12px 20px;
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-  white-space: nowrap;
-}
-
-.btn-clear:hover {
-  background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
-}
-
-.btn-clear:active {
-  transform: translateY(-1px);
-}
+/* Archive page specific styles are loaded from components.css */
 </style>
 
 <script src="../js/navbar.js"></script>

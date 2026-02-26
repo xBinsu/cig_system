@@ -79,12 +79,25 @@ $announcement = ['setting_value' => 'Welcome to the Admin Dashboard!'];
 
     <!-- ANNOUNCEMENT BOARD -->
     <div class="announcement-board">
-      <div class="announcement-header">
-        <h3>Announcements</h3>
-        <button class="edit-btn" onclick="editAnnouncement()">✏️ Edit</button>
-      </div>
-      <div class="announcement-content" id="announcementContent">
-        <p><?php echo htmlspecialchars($announcement['setting_value'] ?? 'Welcome to the Admin Dashboard!'); ?></p>
+      <div class="announcement-board-inner">
+        <div class="announcement-header">
+          <div class="announcement-header-left">
+            <div class="announcement-icon">
+              <i class="fas fa-bell"></i>
+            </div>
+            <div class="announcement-header-text">
+              <h3>Latest Announcements</h3>
+              <span class="announcement-subtitle">Important updates and notices</span>
+            </div>
+          </div>
+          <button class="edit-btn" onclick="editAnnouncement()">
+            <i class="fas fa-edit"></i>
+            <span>Edit</span>
+          </button>
+        </div>
+        <div class="announcement-content" id="announcementContent">
+          <p><?php echo htmlspecialchars($announcement['setting_value'] ?? 'Welcome to the Admin Dashboard!'); ?></p>
+        </div>
       </div>
     </div>
 

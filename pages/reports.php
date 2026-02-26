@@ -81,6 +81,7 @@ $approval_rate = ($stats && $stats['total_submissions'] > 0)
 <title>Reports - Admin</title>
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/navbar.css">
+<link rel="stylesheet" href="../css/components.css">
 <link rel="stylesheet" href="../css/reports.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -99,51 +100,51 @@ $user_name = $user['full_name'] ?? '';
     </div>
 
     <!-- SUMMARY CARDS -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
-      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px;">
-        <h3 style="margin: 0 0 10px 0;">Total Submissions</h3>
-        <p style="margin: 0; font-size: 2em; font-weight: bold;"><?php echo $stats['total_submissions'] ?? 0; ?></p>
+    <div class="stats-cards">
+      <div class="stat-card stat-card-primary">
+        <h3><i class="fas fa-file-alt"></i> Total Submissions</h3>
+        <p><?php echo $stats['total_submissions'] ?? 0; ?></p>
       </div>
-      <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 8px;">
-        <h3 style="margin: 0 0 10px 0;">Approval Rate</h3>
-        <p style="margin: 0; font-size: 2em; font-weight: bold;"><?php echo $approval_rate; ?>%</p>
+      <div class="stat-card stat-card-success">
+        <h3><i class="fas fa-check-circle"></i> Approval Rate</h3>
+        <p><?php echo $approval_rate; ?>%</p>
       </div>
-      <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 8px;">
-        <h3 style="margin: 0 0 10px 0;">Organizations</h3>
-        <p style="margin: 0; font-size: 2em; font-weight: bold;"><?php echo $org_stats['active_orgs'] ?? 0; ?></p>
+      <div class="stat-card stat-card-info">
+        <h3><i class="fas fa-building"></i> Organizations</h3>
+        <p><?php echo $org_stats['active_orgs'] ?? 0; ?></p>
       </div>
-      <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; padding: 20px; border-radius: 8px;">
-        <h3 style="margin: 0 0 10px 0;">Total Users</h3>
-        <p style="margin: 0; font-size: 2em; font-weight: bold;"><?php echo $user_stats['total_users'] ?? 0; ?></p>
+      <div class="stat-card stat-card-warning">
+        <h3><i class="fas fa-users"></i> Total Users</h3>
+        <p><?php echo $user_stats['total_users'] ?? 0; ?></p>
       </div>
     </div>
 
     <!-- SUBMISSION STATUS BREAKDOWN -->
-    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-      <h3>Submission Status Breakdown</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
-        <div style="background-color: white; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
-          <p style="margin: 0; color: #666; font-size: 0.9em;">Pending</p>
-          <p style="margin: 5px 0 0 0; font-size: 1.5em; font-weight: bold; color: #ffc107;"><?php echo $stats['pending'] ?? 0; ?></p>
+    <div class="status-breakdown">
+      <h3><i class="fas fa-list"></i> Submission Status Breakdown</h3>
+      <div class="breakdown-cards">
+        <div class="breakdown-card pending">
+          <p><i class="fas fa-hourglass-half"></i> Pending</p>
+          <p class="count"><?php echo $stats['pending'] ?? 0; ?></p>
         </div>
-        <div style="background-color: white; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
-          <p style="margin: 0; color: #666; font-size: 0.9em;">Approved</p>
-          <p style="margin: 5px 0 0 0; font-size: 1.5em; font-weight: bold; color: #28a745;"><?php echo $stats['approved'] ?? 0; ?></p>
+        <div class="breakdown-card approved">
+          <p><i class="fas fa-check-circle"></i> Approved</p>
+          <p class="count"><?php echo $stats['approved'] ?? 0; ?></p>
         </div>
-        <div style="background-color: white; padding: 15px; border-radius: 8px; border-left: 4px solid #dc3545;">
-          <p style="margin: 0; color: #666; font-size: 0.9em;">Rejected</p>
-          <p style="margin: 5px 0 0 0; font-size: 1.5em; font-weight: bold; color: #dc3545;"><?php echo $stats['rejected'] ?? 0; ?></p>
+        <div class="breakdown-card rejected">
+          <p><i class="fas fa-times-circle"></i> Rejected</p>
+          <p class="count"><?php echo $stats['rejected'] ?? 0; ?></p>
         </div>
-        <div style="background-color: white; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8;">
-          <p style="margin: 0; color: #666; font-size: 0.9em;">In Review</p>
-          <p style="margin: 5px 0 0 0; font-size: 1.5em; font-weight: bold; color: #17a2b8;"><?php echo $stats['in_review'] ?? 0; ?></p>
+        <div class="breakdown-card in-review">
+          <p><i class="fas fa-eye"></i> In Review</p>
+          <p class="count"><?php echo $stats['in_review'] ?? 0; ?></p>
         </div>
       </div>
     </div>
 
     <!-- RECENT ACTIVITY -->
-    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
-      <h3>Recent System Activity</h3>
+    <div class="activity-container">
+      <h3><i class="fas fa-history"></i> Recent System Activity</h3>
       <div class="table-container">
         <table>
           <thead>
@@ -167,8 +168,13 @@ $user_name = $user['full_name'] ?? '';
                 </tr>
               <?php endforeach; ?>
             <?php else: ?>
-              <tr>
-                <td colspan="5" style="text-align: center; color: #999;">No recent activity</td>
+              <tr class="empty-row">
+                <td colspan="5">
+                  <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No recent activity</p>
+                  </div>
+                </td>
               </tr>
             <?php endif; ?>
           </tbody>
