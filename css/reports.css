@@ -1,0 +1,162 @@
+/* REPORTS SPECIFIC STYLES */
+
+@keyframes waveBackground {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.page {
+  background: linear-gradient(-45deg, #a8e6cf 0%, #c0f0e0 25%, #d8f9f0 50%, #c0f0e0 75%, #d8f9f0 100%);
+  background-size: 200% 200%;
+  animation: waveBackground 8s ease infinite;
+  flex: 1;
+  padding: 30px 40px;
+  display: none;
+  overflow-y: auto;
+}
+
+.page.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page h2 {
+  color: #1a202c;
+  font-size: 1.8em;
+  margin-bottom: 25px;
+  font-weight: 700;
+}
+
+/* Page Header with Modern Design */
+.page-header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 3px solid #0d4a2d;
+  position: relative;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #0d4a2d 0%, #1e6f3f 100%);
+  border-radius: 2px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0d4a2d 0%, #1e6f3f 50%, #2d8b56 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  letter-spacing: -0.5px;
+}
+
+.page-header h2 i {
+  font-size: 32px;
+  color: #0d4a2d;
+  -webkit-text-fill-color: #0d4a2d;
+  background: linear-gradient(135deg, #0d4a2d 0%, #1e6f3f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* CARDS */
+.cards {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  flex: 1;
+  min-width: 200px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+  text-align: center;
+  transition: .3s;
+  cursor: pointer;
+  border-top: 4px solid #10b981;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.card h3 {
+  color: #4a5568;
+  font-size: 0.95em;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card p {
+  color: #2d3748;
+  font-size: 2em;
+  font-weight: 700;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px) {
+  .page {
+    padding: 20px;
+  }
+  .cards {
+    gap: 15px;
+  }
+  .card {
+    min-width: 150px;
+    padding: 15px;
+  }
+}
+
+/* TOPBAR LEFT */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* CIG HEADER */
+#cig {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: #2d3748;
+  letter-spacing: 0.3px;
+}
