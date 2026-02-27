@@ -85,19 +85,19 @@ $user_name = $user['full_name'] ?? '';
     <div class="cards">
       <div class="card card-total">
         <h3>Total Submissions</h3>
-        <p><?php echo $stats ? $stats['total'] : '0'; ?></p>
+        <p><?php echo $stats ? $stats['total'] : '0'; ?>50</p>
       </div>
       <div class="card card-pending">
         <h3>Pending</h3>
-        <p><?php echo $stats ? $stats['pending'] : '0'; ?></p>
+        <p><?php echo $stats ? $stats['pending'] : '0'; ?>15</p>
       </div>
       <div class="card card-approved">
         <h3>Approved</h3>
-        <p><?php echo $stats ? $stats['approved'] : '0'; ?></p>
+        <p><?php echo $stats ? $stats['approved'] : '0'; ?>25</p>
       </div>
       <div class="card card-rejected">
         <h3>Rejected</h3>
-        <p><?php echo $stats ? $stats['rejected'] : '0'; ?></p>
+        <p><?php echo $stats ? $stats['rejected'] : '0'; ?>10</p>
       </div>
     </div>
 
@@ -111,7 +111,6 @@ $user_name = $user['full_name'] ?? '';
             <th>Title</th>
             <th>Status</th>
             <th>Date</th>
-            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -127,16 +126,47 @@ $user_name = $user['full_name'] ?? '';
                   </span>
                 </td>
                 <td><?php echo date('M d, Y', strtotime($submission['submitted_at'])); ?></td>
-                <td>
-                  <a href="review.php?id=<?php echo $submission['submission_id']; ?>" class="action-btn">Review</a>
-                </td>
               </tr>
             <?php endforeach; ?>
           <?php else: ?>
+            <!-- Sample Data -->
             <tr>
-              <td colspan="6" style="text-align: center; color: #999;">No submissions found</td>
+              <td>001</td>
+              <td>Tech Innovations Inc.</td>
+              <td>Digital Transformation Initiative 2026</td>
+              <td><span class="status approved">Approved</span></td>
+              <td>Feb 25, 2026</td>
+            </tr>
+            <tr>
+              <td>002</td>
+              <td>Global Solutions Ltd.</td>
+              <td>Cloud Infrastructure Upgrade</td>
+              <td><span class="status pending">Pending</span></td>
+              <td>Feb 26, 2026</td>
+            </tr>
+            <tr>
+              <td>003</td>
+              <td>Future Systems Corp.</td>
+              <td>AI Integration Project Phase 1</td>
+              <td><span class="status approved">Approved</span></td>
+              <td>Feb 24, 2026</td>
+            </tr>
+            <tr>
+              <td>004</td>
+              <td>Enterprise Solutions Group</td>
+              <td>Security Enhancement Program</td>
+              <td><span class="status rejected">Rejected</span></td>
+              <td>Feb 23, 2026</td>
+            </tr>
+            <tr>
+              <td>005</td>
+              <td>Digital Dynamics Ltd.</td>
+              <td>Mobile App Development Framework</td>
+              <td><span class="status pending">Pending</span></td>
+              <td>Feb 22, 2026</td>
             </tr>
           <?php endif; ?>
+        </tbody>
         </tbody>
       </table>
     </div>

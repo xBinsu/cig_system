@@ -134,15 +134,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 20px;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .logo-placeholder {
   width: 80px;
   height: 80px;
   object-fit: contain;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #cig-logo {
@@ -153,7 +156,8 @@ body {
 
 .login-header-logos img:first-child,
 .login-header-logos img:last-child {
-  margin-top: 30px;
+  margin-top: 0;
+  align-self: center;
 }
 
 .header-text {
@@ -261,7 +265,7 @@ body {
 }
 
 .forgot-password {
-  color: #10b981;
+  color: #2d3748;
   text-decoration: none;
   font-weight: 500;
   transition: all 0.3s ease;
@@ -361,6 +365,32 @@ body {
   color: #718096;
   padding-top: 15px;
   border-top: 1px solid #e2e8f0;
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.85em;
+  color: #718096;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.footer-content p {
+  margin: 0;
+  color: #2d3748;
+}
+
+.footer-subtext {
+  font-size: 0.8em;
+  color: #a0aec0;
+  font-weight: 400;
 }
 
 .signup-link {

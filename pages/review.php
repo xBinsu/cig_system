@@ -282,7 +282,7 @@ $user_name = $user['full_name'] ?? '';
         <span><?php echo htmlspecialchars($current_org['org_name']); ?></span>
       </div>
 
-      <h3><?php echo htmlspecialchars($current_org['org_name']); ?> - Submissions</h3>
+      <h3><?php echo htmlspecialchars($current_org['org_name']); ?> </h3>
       
       <div class="search-filter-container">
         <form method="GET" class="search-filter-form">

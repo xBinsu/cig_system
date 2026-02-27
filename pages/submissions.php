@@ -48,6 +48,14 @@ try {
 // Sample submissions for demonstration (pending and in_review only)
 $sample_submissions = [
     [
+        'submission_id' => 1,
+        'title' => 'New Library Computer Lab Setup',
+        'org_name' => 'Technology Department',
+        'status' => 'pending',
+        'submitted_by_name' => 'David Martinez',
+        'submitted_at' => date('Y-m-d H:i:s', strtotime('-5 days'))
+    ],
+    [
         'submission_id' => 2,
         'title' => 'Campus Safety Improvement Proposal',
         'org_name' => 'Security Committee',
@@ -62,6 +70,22 @@ $sample_submissions = [
         'status' => 'pending',
         'submitted_by_name' => 'Robert Tanaka',
         'submitted_at' => date('Y-m-d H:i:s', strtotime('-1 day'))
+    ],
+    [
+        'submission_id' => 4,
+        'title' => 'Renovation Plan - Student Center',
+        'org_name' => 'Facilities Management',
+        'status' => 'in_review',
+        'submitted_by_name' => 'Lisa Anderson',
+        'submitted_at' => date('Y-m-d H:i:s', strtotime('-2 days'))
+    ],
+    [
+        'submission_id' => 5,
+        'title' => 'Parking Expansion Initiative',
+        'org_name' => 'Transportation Services',
+        'status' => 'pending',
+        'submitted_by_name' => 'James Park',
+        'submitted_at' => date('Y-m-d H:i:s', strtotime('-4 days'))
     ]
 ];
 
@@ -352,6 +376,40 @@ $user_name = $user['full_name'] ?? '';
   background-color: #8e44ad;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(155, 89, 182, 0.3);
+}
+
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.status.in_review {
+  background-color: #cfe2ff;
+  color: #084298;
+  border: 1px solid #b6d4fe;
+}
+
+.status.approved {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+.status.rejected {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
 }
 </style>
 
