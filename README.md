@@ -1,2 +1,0 @@
-# CIG-ADMIN
-testing
