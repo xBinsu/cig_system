@@ -135,6 +135,7 @@ $user_name = $user['full_name'] ?? '';
             <?php else: ?>
               <!-- Sample Rejected Submissions -->
               <tr>
+<<<<<<< Updated upstream
                 <td>001</td>
                 <td>Incomplete Project Documentation</td>
                 <td>Research Department</td>
@@ -169,6 +170,9 @@ $user_name = $user['full_name'] ?? '';
                 <td>Feb 12, 2026</td>
                 <td>Feb 13, 2026</td>
                 <td><a href="#" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a></td>
+=======
+                <td colspan="7" style="text-align: center; color: #999;">No rejected submissions</td>
+>>>>>>> Stashed changes
               </tr>
             <?php endif; ?>
           </tbody>

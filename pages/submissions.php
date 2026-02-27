@@ -377,6 +377,7 @@ $user_name = $user['full_name'] ?? '';
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(155, 89, 182, 0.3);
 }
+<<<<<<< Updated upstream
 
 .status {
   display: inline-block;
@@ -411,6 +412,8 @@ $user_name = $user['full_name'] ?? '';
   color: #842029;
   border: 1px solid #f5c2c7;
 }
+=======
+>>>>>>> Stashed changes
 </style>
 
 <script>

@@ -22,9 +22,8 @@ $notifications = $notifications ?? [];
   <a href="index.php" class="logo-link <?php echo basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : ''; ?>" data-page="home"><img src="../assets/cigorig.png" alt="Logo" class="logo"></a>
   <a href="dashboard.php" class="nav-link <?php echo $current_page === 'dashboard' ? 'active' : ''; ?>" data-page="dashboard"><i></i> <span>Dashboard</span></a>
   <a href="submissions.php" class="nav-link <?php echo $current_page === 'submissions' ? 'active' : ''; ?>" data-page="submissions"><i></i> <span>Submissions</span></a>
-  <a href="review.php" class="nav-link <?php echo $current_page === 'review' ? 'active' : ''; ?>" data-page="review"><i></i> <span>Review & Approval</span></a>
+  <a href="review.php" class="nav-link <?php echo $current_page === 'review' ? 'active' : ''; ?>" data-page="review"><i></i> <span>Organizations</span></a>
   <a href="archive.php" class="nav-link <?php echo $current_page === 'archive' ? 'active' : ''; ?>" data-page="archive"><i></i> <span>Document Archive</span></a>
-  <a href="organizations.php" class="nav-link <?php echo $current_page === 'organizations' ? 'active' : ''; ?>" data-page="organizations"><i></i> <span>Organizations</span></a>
   <a href="reports.php" class="nav-link <?php echo $current_page === 'reports' ? 'active' : ''; ?>" data-page="reports"><i></i> <span>Reports</span></a>
   <div class="sidebar-footer">
     <a href="logout.php" class="logout-btn"><span>Logout</span></a>

@@ -84,6 +84,7 @@ $user_name = $user['full_name'] ?? '';
     
     <div class="cards">
       <div class="card card-total">
+<<<<<<< Updated upstream
         <h3>Total Submissions</h3>
         <p><?php echo $stats ? $stats['total'] : '0'; ?>50</p>
       </div>
@@ -98,11 +99,54 @@ $user_name = $user['full_name'] ?? '';
       <div class="card card-rejected">
         <h3>Rejected</h3>
         <p><?php echo $stats ? $stats['rejected'] : '0'; ?>10</p>
+=======
+        <div class="card-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <div class="card-content">
+          <h3>Total Submissions</h3>
+          <p class="card-number"><?php echo $stats ? $stats['total'] : '0'; ?></p>
+        </div>
+      </div>
+      <div class="card card-pending">
+        <div class="card-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="card-content">
+          <h3>Pending</h3>
+          <p class="card-number"><?php echo $stats ? $stats['pending'] : '0'; ?></p>
+        </div>
+      </div>
+      <div class="card card-approved">
+        <div class="card-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="card-content">
+          <h3>Approved</h3>
+          <p class="card-number"><?php echo $stats ? $stats['approved'] : '0'; ?></p>
+        </div>
+      </div>
+      <div class="card card-rejected">
+        <div class="card-icon">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="card-content">
+          <h3>Rejected</h3>
+          <p class="card-number"><?php echo $stats ? $stats['rejected'] : '0'; ?></p>
+        </div>
+>>>>>>> Stashed changes
       </div>
     </div>
 
     <div class="table-container">
+<<<<<<< Updated upstream
       <h2>Recent Submissions</h2>
+=======
+      <div class="table-header-section">
+        <h3><i class="fas fa-history"></i> Recent Submissions</h3>
+        
+      </div>
+>>>>>>> Stashed changes
       <table>
         <thead>
           <tr>
@@ -111,6 +155,10 @@ $user_name = $user['full_name'] ?? '';
             <th>Title</th>
             <th>Status</th>
             <th>Date</th>
+<<<<<<< Updated upstream
+=======
+            <th>Action</th>
+>>>>>>> Stashed changes
           </tr>
         </thead>
         <tbody>
@@ -131,6 +179,7 @@ $user_name = $user['full_name'] ?? '';
           <?php else: ?>
             <!-- Sample Data -->
             <tr>
+<<<<<<< Updated upstream
               <td>001</td>
               <td>Tech Innovations Inc.</td>
               <td>Digital Transformation Initiative 2026</td>
@@ -164,6 +213,9 @@ $user_name = $user['full_name'] ?? '';
               <td>Mobile App Development Framework</td>
               <td><span class="status pending">Pending</span></td>
               <td>Feb 22, 2026</td>
+=======
+              <td colspan="6" style="text-align: center; color: #999;">No submissions found</td>
+>>>>>>> Stashed changes
             </tr>
           <?php endif; ?>
         </tbody>
