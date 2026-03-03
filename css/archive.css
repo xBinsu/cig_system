@@ -186,6 +186,35 @@ tbody tr:hover {
   transform: scale(1.001);
 }
 
+/* ACTION LINKS */
+.action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid rgba(30, 64, 175, 0.2);
+}
+
+.action-link:hover {
+  background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+  color: #1e3a8a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+  border-color: rgba(30, 64, 175, 0.3);
+}
+
+.action-link i {
+  font-size: 0.9em;
+}
+
 .status {
   padding: 8px 12px;
   border-radius: 6px;

@@ -219,6 +219,123 @@
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 
+/* Logout Confirmation Modal */
+.logout-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.logout-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  max-width: 450px;
+  width: 90%;
+  animation: slideUp 0.3s ease;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.logout-modal-header {
+  padding: 24px 24px 16px 24px;
+  background: rgba(16, 185, 129, 0.05);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.logout-modal-header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+.logout-modal-body {
+  padding: 24px;
+}
+
+.logout-modal-body p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 1em;
+  line-height: 1.5;
+}
+
+.logout-modal-footer {
+  padding: 16px 24px 24px 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.modal-btn-cancel {
+  background: #e5e7eb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.modal-btn-cancel:hover {
+  background: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-btn-cancel:active {
+  transform: scale(0.98);
+}
+
+.modal-btn-confirm {
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: 1px solid #dc2626;
+}
+
+.modal-btn-confirm:hover {
+  background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.modal-btn-confirm:active {
+  transform: scale(0.98);
+}
+
 .sidebar a i {
   margin-right: 12px;
   font-size: 1.1em;

@@ -26,7 +26,23 @@ $notifications = $notifications ?? [];
   <a href="archive.php" class="nav-link <?php echo $current_page === 'archive' ? 'active' : ''; ?>" data-page="archive"><i></i> <span>Document Archive</span></a>
   <a href="reports.php" class="nav-link <?php echo $current_page === 'reports' ? 'active' : ''; ?>" data-page="reports"><i></i> <span>Reports</span></a>
   <div class="sidebar-footer">
-    <a href="logout.php" class="logout-btn"><span>Logout</span></a>
+    <button onclick="showLogoutModal()" class="logout-btn"><span>Logout</span></button>
+  </div>
+</div>
+
+<!-- LOGOUT CONFIRMATION MODAL -->
+<div id="logoutModal" class="logout-modal-overlay" style="display: none;">
+  <div class="logout-modal">
+    <div class="logout-modal-header">
+      <h3>Confirm Logout</h3>
+    </div>
+    <div class="logout-modal-body">
+      <p>Are you sure you want to logout?</p>
+    </div>
+    <div class="logout-modal-footer">
+      <button onclick="cancelLogout()" class="modal-btn modal-btn-cancel">Cancel</button>
+      <button onclick="confirmLogout()" class="modal-btn modal-btn-confirm">Logout</button>
+    </div>
   </div>
 </div>
 

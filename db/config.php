@@ -70,6 +70,30 @@ class Database {
     }
     
     /**
+     * Execute a query (INSERT, UPDATE, DELETE)
+     */
+    public function execute($query, $params = []) {
+        if ($stmt = $this->conn->prepare($query)) {
+            if (!empty($params)) {
+                $types = str_repeat('s', count($params));
+                $stmt->bind_param($types, ...$params);
+            }
+            if ($stmt->execute()) {
+                return $stmt->affected_rows > 0 ? true : false;
+            }
+            throw new Exception("Query execution failed: " . $stmt->error);
+        }
+        throw new Exception("Query preparation failed: " . $this->conn->error);
+    }
+    
+    /**
+     * Get last insert ID
+     */
+    public function getLastInsertId() {
+        return $this->conn->insert_id;
+    }
+    
+    /**
      * Insert a record
      */
     public function insert($table, $data) {

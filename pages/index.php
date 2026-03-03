@@ -35,8 +35,10 @@ $approval_rate = $stats['total'] > 0
     ? round(($stats['approved'] / $stats['total']) * 100) 
     : 0;
 
-// Initialize announcement variable
-$announcement = ['setting_value' => 'Welcome to the Admin Dashboard!'];
+// Fetch latest announcement from database
+$announcement_query = "SELECT * FROM announcements WHERE is_active = 1 ORDER BY created_at DESC LIMIT 1";
+$announcement_result = mysqli_query($conn, $announcement_query);
+$announcement = mysqli_fetch_assoc($announcement_result) ?? ['content' => 'Welcome to the Admin Dashboard!'];
 
 ?>
 <!DOCTYPE html>
@@ -80,11 +82,17 @@ $announcement = ['setting_value' => 'Welcome to the Admin Dashboard!'];
     <!-- ANNOUNCEMENT BOARD -->
     <div class="announcement-board">
       <div class="announcement-header">
-        <h3>Announcements</h3>
-        <button class="edit-btn" onclick="editAnnouncement()">✏️ Edit</button>
+        <div class="announcement-header-left">
+          <i class="fas fa-megaphone announcement-icon"></i>
+          <h3>📢 Important Announcements</h3>
+        </div>
+        <button class="edit-btn" onclick="editAnnouncement()"><i class="fas fa-pencil-alt"></i> Edit</button>
       </div>
       <div class="announcement-content" id="announcementContent">
-        <p><?php echo htmlspecialchars($announcement['setting_value'] ?? 'Welcome to the Admin Dashboard!'); ?></p>
+        <p><?php echo htmlspecialchars($announcement['content'] ?? 'Welcome to the Admin Dashboard!'); ?></p>
+      </div>
+      <div class="announcement-footer">
+        <span class="announcement-updated">Last updated: <?php echo date('M d, Y H:i'); ?></span>
       </div>
     </div>
 
@@ -276,7 +284,9 @@ $announcement = ['setting_value' => 'Welcome to the Admin Dashboard!'];
     <div class="modal-content">
       <h3>Edit Announcement</h3>
       <form id="announcementForm" method="POST" action="">
-        <textarea id="announcementText" name="announcement_text" placeholder="Enter announcement text..." required><?php echo htmlspecialchars($announcement['setting_value'] ?? ''); ?></textarea>
+        <input type="hidden" id="announcementId" value="<?php echo $announcement['announcement_id'] ?? 1; ?>">
+        <input type="hidden" id="currentUserId" value="<?php echo $_SESSION['user_id'] ?? 1; ?>">
+        <textarea id="announcementText" name="announcement_text" placeholder="Enter announcement text..." required><?php echo htmlspecialchars($announcement['content'] ?? ''); ?></textarea>
         <div class="modal-buttons">
           <button type="submit" class="save-btn">Save</button>
           <button type="button" class="cancel-btn" onclick="closeAnnouncementModal()">Cancel</button>

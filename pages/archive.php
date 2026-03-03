@@ -128,21 +128,22 @@ $user_name = $user['full_name'] ?? '';
                   <td><?php echo date('M d, Y', strtotime($submission['submitted_at'])); ?></td>
                   <td><?php echo date('M d, Y', strtotime($submission['updated_at'])); ?></td>
                   <td>
-                    <a href="archive.php?view=<?php echo $submission['submission_id']; ?>" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a>
+                    <a href="archive.php?view=<?php echo $submission['submission_id']; ?>" class="action-link"><i class="fas fa-eye"></i> View Details</a>
                   </td>
                 </tr>
               <?php endforeach; ?>
             <?php else: ?>
-              <!-- Sample Rejected Submissions -->
+              <!-- Sample Archived/Rejected Submissions -->
               <tr>
-<<<<<<< Updated upstream
                 <td>001</td>
                 <td>Incomplete Project Documentation</td>
                 <td>Research Department</td>
                 <td>John Smith</td>
                 <td>Feb 20, 2026</td>
                 <td>Feb 21, 2026</td>
-                <td><a href="#" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a></td>
+                <td>
+                  <a href="#" class="action-link"><i class="fas fa-eye"></i> View Details</a>
+                </td>
               </tr>
               <tr>
                 <td>002</td>
@@ -151,7 +152,9 @@ $user_name = $user['full_name'] ?? '';
                 <td>Sarah Johnson</td>
                 <td>Feb 18, 2026</td>
                 <td>Feb 19, 2026</td>
-                <td><a href="#" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a></td>
+                <td>
+                  <a href="#" class="action-link"><i class="fas fa-eye"></i> View Details</a>
+                </td>
               </tr>
               <tr>
                 <td>003</td>
@@ -160,7 +163,9 @@ $user_name = $user['full_name'] ?? '';
                 <td>Michael Chen</td>
                 <td>Feb 15, 2026</td>
                 <td>Feb 16, 2026</td>
-                <td><a href="#" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a></td>
+                <td>
+                  <a href="#" class="action-link"><i class="fas fa-eye"></i> View Details</a>
+                </td>
               </tr>
               <tr>
                 <td>004</td>
@@ -169,10 +174,31 @@ $user_name = $user['full_name'] ?? '';
                 <td>Emma Wilson</td>
                 <td>Feb 12, 2026</td>
                 <td>Feb 13, 2026</td>
-                <td><a href="#" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Details</a></td>
-=======
-                <td colspan="7" style="text-align: center; color: #999;">No rejected submissions</td>
->>>>>>> Stashed changes
+                <td>
+                  <a href="#" class="action-link"><i class="fas fa-eye"></i> View Details</a>
+                </td>
+              </tr>
+              <tr>
+                <td>005</td>
+                <td>Policy Review Update - Rejected</td>
+                <td>Academic Affairs</td>
+                <td>Dr. Patricia Lee</td>
+                <td>Feb 10, 2026</td>
+                <td>Feb 11, 2026</td>
+                <td>
+                  <a href="#" class="action-link"><i class="fas fa-eye"></i> View Details</a>
+                </td>
+              </tr>
+              <tr>
+                <td>006</td>
+                <td>Compliance Audit Report</td>
+                <td>Audit Committee</td>
+                <td>James Richardson</td>
+                <td>Feb 08, 2026</td>
+                <td>Feb 09, 2026</td>
+                <td>
+                  <a href="#" class="action-link"><i class="fas fa-eye"></i> View Details</a>
+                </td>
               </tr>
             <?php endif; ?>
           </tbody>

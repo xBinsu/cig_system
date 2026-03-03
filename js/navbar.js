@@ -15,15 +15,47 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Logout function
-function logout() {
-  if (confirm('Are you sure you want to logout?')) {
-    // Clear session/localStorage if needed
-    localStorage.clear();
-    sessionStorage.clear();
-    // Redirect to login page
-    window.location.href = 'login.html';
+// Show logout confirmation modal
+function showLogoutModal() {
+  const modal = document.getElementById('logoutModal');
+  if (modal) {
+    modal.style.display = 'flex';
   }
 }
+
+// Cancel logout
+function cancelLogout() {
+  const modal = document.getElementById('logoutModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// Confirm logout
+function confirmLogout() {
+  // Clear session/localStorage if needed
+  localStorage.clear();
+  sessionStorage.clear();
+  // Redirect to logout page
+  window.location.href = 'logout.php';
+}
+
+// Close modal when clicking outside of it
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('logoutModal');
+  if (modal && e.target === modal) {
+    modal.style.display = 'none';
+  }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('logoutModal');
+    if (modal && modal.style.display !== 'none') {
+      modal.style.display = 'none';
+    }
+  }
+});
 
 

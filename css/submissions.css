@@ -179,7 +179,7 @@ tbody tr:hover {
 }
 
 .pending {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #fabc51 0%, #f0a44e 100%);
 }
 
 .approved {

@@ -96,15 +96,15 @@ $user_name = $user['full_name'] ?? '';
                 <td><?php echo htmlspecialchars($org['org_code']); ?></td>
                 <td><?php echo htmlspecialchars($org['email'] ?? 'N/A'); ?></td>
                 <td>
-                  <span style="padding: 4px 8px; border-radius: 4px; background-color: <?php echo $org['status'] === 'active' ? '#d4edda' : '#f8d7da'; ?>; color: <?php echo $org['status'] === 'active' ? '#155724' : '#721c24'; ?>;">
+                  <span class="status <?php echo strtolower($org['status']); ?>">
                     <?php echo ucfirst($org['status']); ?>
                   </span>
                 </td>
                 <td><?php echo $org['submission_count'] ?? 0; ?></td>
                 <td><?php echo $org['created_by'] === 1 ? 'Admin' : 'System'; ?></td>
                 <td>
-                  <a href="organizations.php?view=<?php echo $org['org_id']; ?>" style="color: #007bff; text-decoration: none; margin-right: 10px;">View</a>
-                  <a href="organizations.php?edit=<?php echo $org['org_id']; ?>" style="color: #ffc107; text-decoration: none;">Edit</a>
+                  <a href="organizations.php?view=<?php echo $org['org_id']; ?>" class="action-link"><i class="fas fa-eye"></i> View</a>
+                  <a href="organizations.php?edit=<?php echo $org['org_id']; ?>" class="action-link action-edit" style="margin-left: 6px;"><i class="fas fa-edit"></i> Edit</a>
                 </td>
               </tr>
             <?php endforeach; ?>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 20, 2026 at 02:56 AM
+-- Generation Time: Mar 03, 2026 at 02:59 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -36,6 +36,30 @@ CREATE TABLE `activity_logs` (
   `user_agent` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcements`
+--
+
+CREATE TABLE `announcements` (
+  `announcement_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `created_by` int(11) NOT NULL,
+  `updated_by` int(11) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `announcements`
+--
+
+INSERT INTO `announcements` (`announcement_id`, `title`, `content`, `created_by`, `updated_by`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'Admin Announcement', 'test test', 1, 1, 1, '2026-03-02 07:13:47', '2026-03-03 00:30:33');
 
 -- --------------------------------------------------------
 
@@ -97,9 +121,13 @@ CREATE TABLE `organizations` (
 --
 
 INSERT INTO `organizations` (`org_id`, `org_name`, `org_code`, `description`, `contact_person`, `email`, `phone`, `status`, `created_at`, `created_by`, `updated_at`) VALUES
-(1, 'Student Government Association', 'SGA', 'Main student government body', 'Juan Martinez', 'sga@cig.edu.ph', NULL, 'active', '2026-02-20 01:47:33', 1, '2026-02-20 01:47:33'),
 (2, 'Cultural and Arts Club', 'CAC', 'Student cultural organization', 'Maria Santos', 'cac@cig.edu.ph', NULL, 'active', '2026-02-20 01:47:33', 1, '2026-02-20 01:47:33'),
-(3, 'Academic Excellence Board', 'AEB', 'Scholastic achievement promotion', 'Jose Reyes', 'aeb@cig.edu.ph', NULL, 'active', '2026-02-20 01:47:33', 1, '2026-02-20 01:47:33');
+(3, 'Academic Excellence Board', 'AEB', 'Scholastic achievement promotion', 'Jose Reyes', 'aeb@cig.edu.ph', NULL, 'active', '2026-02-20 01:47:33', 1, '2026-02-20 01:47:33'),
+(4, 'College Of Accountancy', 'COA', 'yeah', 'President Duterte', 'coa@org.com', '09091234987', 'active', '2026-02-20 05:10:29', 1, '2026-02-20 05:10:29'),
+(7, 'Council of Internal Governance', 'CIG', 'INDEPENDENT STUDENT ORG', 'John Doe', 'cig@plsp.edu.ph', '09231984567', 'active', '2026-02-20 06:43:11', 1, '2026-02-20 06:43:11'),
+(37, 'Tech Innovation Club', 'TIC', 'Student technology organization', 'Robert Johnson', 'tic@cig.edu.ph', '555-0101', 'active', '2026-03-03 01:55:23', 1, '2026-03-03 01:55:23'),
+(38, 'Environmental Alliance', 'EA', 'Eco-friendly student organization', 'Lisa Wong', 'ea@cig.edu.ph', '555-0102', 'active', '2026-03-03 01:55:23', 1, '2026-03-03 01:55:23'),
+(39, 'Business Leaders Network', 'BLN', 'Business and entrepreneurship club', 'Michael Chen', 'bln@cig.edu.ph', '555-0103', 'active', '2026-03-03 01:55:23', 1, '2026-03-03 01:55:23');
 
 -- --------------------------------------------------------
 
@@ -135,32 +163,6 @@ CREATE TABLE `reviews` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `settings`
---
-
-CREATE TABLE `settings` (
-  `setting_id` int(11) NOT NULL,
-  `key_name` varchar(255) NOT NULL,
-  `value` text DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `settings`
---
-
-INSERT INTO `settings` (`setting_id`, `key_name`, `value`, `description`, `created_at`, `updated_at`) VALUES
-(1, 'app_name', 'CIG Admin Dashboard', 'Application name', '2026-02-20 01:47:33', '2026-02-20 01:47:33'),
-(2, 'app_version', '1.0.0', 'Application version', '2026-02-20 01:47:33', '2026-02-20 01:47:33'),
-(3, 'default_language', 'en', 'Default application language', '2026-02-20 01:47:33', '2026-02-20 01:47:33'),
-(4, 'max_file_upload_size', '52428800', 'Maximum file upload size in bytes (50MB)', '2026-02-20 01:47:33', '2026-02-20 01:47:33'),
-(5, 'session_timeout', '3600', 'Session timeout in seconds', '2026-02-20 01:47:33', '2026-02-20 01:47:33');
 
 -- --------------------------------------------------------
 
@@ -206,7 +208,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `full_name`, `role`, `password_hash`, `status`, `created_at`, `last_login`, `updated_at`) VALUES
-(1, 'admin', 'admin@cig.edu.ph', 'Administrator', 'admin', '$2y$10$9.rASXBSgWGQd4EJGvG.vuQMqZ4qgHEXeW.7pVqFLMvVqhBKu0Kfe', 'active', '2026-02-20 01:47:33', NULL, '2026-02-20 01:47:33');
+(1, 'admin', 'admin@cig.edu.ph', 'Administrator', 'admin', '$2y$10$9.rASXBSgWGQd4EJGvG.vuQMqZ4qgHEXeW.7pVqFLMvVqhBKu0Kfe', 'active', '2026-02-20 01:47:33', NULL, '2026-02-20 01:47:33'),
+(2, 'barleee', 'barle@gmail.com', 'Barling Gadz', 'user', '$2y$10$NIN3xVIUqLHVzIuR7aaPiO9L0bSp0cHswL1CH1bVWO0L80TJRMdPS', 'active', '2026-03-02 05:40:49', '2026-03-02 15:04:24', '2026-03-02 07:04:24'),
+(3, 'jmartinez', 'jmartinez@cig.edu.ph', 'John Martinez', 'user', '$2y$10$9.rASXBSgWGQd4EJGvG.vuQMqZ4qgHEXeW.7pVqFLMvVqhBKu0Kfe', 'active', '2026-03-03 01:55:23', NULL, '2026-03-03 01:55:23'),
+(4, 'msantos', 'msantos@cig.edu.ph', 'Maria Santos', 'user', '$2y$10$9.rASXBSgWGQd4EJGvG.vuQMqZ4qgHEXeW.7pVqFLMvVqhBKu0Kfe', 'active', '2026-03-03 01:55:23', NULL, '2026-03-03 01:55:23'),
+(5, 'jreyes', 'jreyes@cig.edu.ph', 'Jose Reyes', 'user', '$2y$10$9.rASXBSgWGQd4EJGvG.vuQMqZ4qgHEXeW.7pVqFLMvVqhBKu0Kfe', 'active', '2026-03-03 01:55:23', NULL, '2026-03-03 01:55:23'),
+(6, 'alopez', 'alopez@cig.edu.ph', 'Angela Lopez', 'user', '$2y$10$9.rASXBSgWGQd4EJGvG.vuQMqZ4qgHEXeW.7pVqFLMvVqhBKu0Kfe', 'active', '2026-03-03 01:55:23', NULL, '2026-03-03 01:55:23'),
+(7, 'rgarcia', 'rgarcia@cig.edu.ph', 'Roberto Garcia', 'user', '$2y$10$9.rASXBSgWGQd4EJGvG.vuQMqZ4qgHEXeW.7pVqFLMvVqhBKu0Kfe', 'active', '2026-03-03 01:55:23', NULL, '2026-03-03 01:55:23');
 
 --
 -- Indexes for dumped tables
@@ -219,6 +227,14 @@ ALTER TABLE `activity_logs`
   ADD PRIMARY KEY (`log_id`),
   ADD KEY `idx_user_created` (`user_id`,`created_at`),
   ADD KEY `idx_action` (`action`);
+
+--
+-- Indexes for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD PRIMARY KEY (`announcement_id`),
+  ADD KEY `created_by` (`created_by`),
+  ADD KEY `updated_by` (`updated_by`);
 
 --
 -- Indexes for table `documents`
@@ -258,13 +274,6 @@ ALTER TABLE `reviews`
   ADD KEY `reviewer_id` (`reviewer_id`);
 
 --
--- Indexes for table `settings`
---
-ALTER TABLE `settings`
-  ADD PRIMARY KEY (`setting_id`),
-  ADD UNIQUE KEY `key_name` (`key_name`);
-
---
 -- Indexes for table `submissions`
 --
 ALTER TABLE `submissions`
@@ -292,6 +301,12 @@ ALTER TABLE `activity_logs`
   MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `announcements`
+--
+ALTER TABLE `announcements`
+  MODIFY `announcement_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `documents`
 --
 ALTER TABLE `documents`
@@ -307,7 +322,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `organizations`
 --
 ALTER TABLE `organizations`
-  MODIFY `org_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `org_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `reports`
@@ -322,22 +337,16 @@ ALTER TABLE `reviews`
   MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `settings`
---
-ALTER TABLE `settings`
-  MODIFY `setting_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT for table `submissions`
 --
 ALTER TABLE `submissions`
-  MODIFY `submission_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `submission_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
@@ -348,6 +357,13 @@ ALTER TABLE `users`
 --
 ALTER TABLE `activity_logs`
   ADD CONSTRAINT `activity_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD CONSTRAINT `announcements_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `announcements_ibfk_2` FOREIGN KEY (`updated_by`) REFERENCES `users` (`user_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `documents`

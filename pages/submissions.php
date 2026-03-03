@@ -157,11 +157,11 @@ $user_name = $user['full_name'] ?? '';
                 <td><?php echo date('M d, Y', strtotime($submission['submitted_at'])); ?></td>
                 <td>
                   <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                    <a href="#" onclick="previewSubmission(<?php echo $submission['submission_id']; ?>); return false;" class="action-btn open-btn" title="Preview"><i class="fas fa-eye"></i> Preview</a>
-                    <button class="action-btn approve-btn" onclick="approveSubmission(<?php echo $submission['submission_id']; ?>)" title="Approve" <?php echo in_array($submission['status'], ['approved']) ? 'disabled' : ''; ?>>
+                    <a href="#" onclick="previewSubmission(<?php echo $submission['submission_id']; ?>); return false;" class="action-link" title="Preview"><i class="fas fa-eye"></i> Preview</a>
+                    <button class="action-link action-approve" onclick="approveSubmission(<?php echo $submission['submission_id']; ?>)" title="Approve" <?php echo in_array($submission['status'], ['approved']) ? 'disabled' : ''; ?>>
                       <i class="fas fa-check"></i> Approve
                     </button>
-                    <button class="action-btn reject-btn" onclick="rejectSubmission(<?php echo $submission['submission_id']; ?>)" title="Reject" <?php echo in_array($submission['status'], ['rejected']) ? 'disabled' : ''; ?>>
+                    <button class="action-link action-reject" onclick="rejectSubmission(<?php echo $submission['submission_id']; ?>)" title="Reject" <?php echo in_array($submission['status'], ['rejected']) ? 'disabled' : ''; ?>>
                       <i class="fas fa-times"></i> Reject
                     </button>
                   </div>
@@ -377,7 +377,6 @@ $user_name = $user['full_name'] ?? '';
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(155, 89, 182, 0.3);
 }
-<<<<<<< Updated upstream
 
 .status {
   display: inline-block;
@@ -412,8 +411,6 @@ $user_name = $user['full_name'] ?? '';
   color: #842029;
   border: 1px solid #f5c2c7;
 }
-=======
->>>>>>> Stashed changes
 </style>
 
 <script>
