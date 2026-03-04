@@ -54,12 +54,13 @@ try {
         GROUP BY status
     ", [$start_date]);
 
-    // Get submissions per organization
+    // Get submissions per organization (org users have org_code set)
     $org_submissions = $db->fetchAll("
-        SELECT o.org_name, COUNT(s.submission_id) as count
-        FROM organizations o
-        LEFT JOIN submissions s ON o.org_id = s.org_id AND s.submitted_at >= ?
-        GROUP BY o.org_id, o.org_name
+        SELECT COALESCE(u.org_name, u.full_name) as org_name, COUNT(s.submission_id) as count
+        FROM users u
+        LEFT JOIN submissions s ON u.user_id = s.org_id AND s.submitted_at >= ?
+        WHERE u.org_code IS NOT NULL
+        GROUP BY u.user_id, u.org_name, u.full_name
         ORDER BY count DESC
         LIMIT 10
     ", [$start_date]);
@@ -78,9 +79,9 @@ try {
 
     // Get smart insights
     $most_active_org = $db->fetchRow("
-        SELECT o.org_name, COUNT(*) as submission_count
+        SELECT COALESCE(u.org_name, u.full_name) as org_name, COUNT(*) as submission_count
         FROM submissions s
-        LEFT JOIN organizations o ON s.org_id = o.org_id
+        LEFT JOIN users u ON s.org_id = u.user_id
         WHERE s.submitted_at >= ?
         GROUP BY s.org_id
         ORDER BY submission_count DESC
@@ -115,10 +116,10 @@ try {
 
     // Get recent submissions
     $recent_submissions = $db->fetchAll("
-        SELECT s.*, u.full_name, o.org_name 
+        SELECT s.*, u.full_name, COALESCE(org.org_name, org.full_name) as org_name 
         FROM submissions s
         LEFT JOIN users u ON s.user_id = u.user_id
-        LEFT JOIN organizations o ON s.org_id = o.org_id
+        LEFT JOIN users org ON s.org_id = org.user_id
         ORDER BY s.submitted_at DESC
         LIMIT 15
     ");

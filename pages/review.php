@@ -21,14 +21,15 @@ $selected_org_id = $_GET['org'] ?? null;
 $selected_submission_id = $_GET['id'] ?? null;
 $search_query = $_GET['search'] ?? '';
 
-// Get all organizations (49 for now - can be changed later)
+// Get all org users (users with org_code set)
 $organizations = [];
 try {
     $organizations = $db->fetchAll("
-        SELECT org_id, org_name, org_code,
-               (SELECT COUNT(*) FROM submissions WHERE org_id = organizations.org_id AND status = 'approved') as submission_count
-        FROM organizations
-        ORDER BY org_name ASC
+        SELECT user_id as org_id, COALESCE(org_name, full_name) as org_name, org_code,
+               (SELECT COUNT(*) FROM submissions WHERE org_id = users.user_id AND status = 'approved') as submission_count
+        FROM users
+        WHERE org_code IS NOT NULL
+        ORDER BY COALESCE(org_name, full_name) ASC
         LIMIT 49
     ");
     
@@ -70,9 +71,11 @@ $submissions = [];
 $current_org = null;
 if ($selected_org_id) {
     try {
-        // Get organization details
+        // Get organization details from users table
         $current_org = $db->fetchRow("
-            SELECT * FROM organizations WHERE org_id = ?
+            SELECT user_id as org_id, COALESCE(org_name, full_name) as org_name, org_code, description, 
+                   contact_person, phone, email, status
+            FROM users WHERE user_id = ? AND org_code IS NOT NULL
         ", [$selected_org_id]);
         
         // Use sample organization if not found
@@ -114,10 +117,10 @@ $submission = null;
 if ($selected_submission_id && $selected_org_id) {
     try {
         $submission = $db->fetchRow("
-            SELECT s.*, u.full_name as submitted_by_name, o.org_name
+            SELECT s.*, u.full_name as submitted_by_name, COALESCE(org.org_name, org.full_name) as org_name
             FROM submissions s
             LEFT JOIN users u ON s.user_id = u.user_id
-            LEFT JOIN organizations o ON s.org_id = o.org_id
+            LEFT JOIN users org ON s.org_id = org.user_id
             WHERE s.submission_id = ? AND s.org_id = ?
         ", [$selected_submission_id, $selected_org_id]);
         

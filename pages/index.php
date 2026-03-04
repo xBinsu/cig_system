@@ -8,37 +8,29 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit();
 }
 
-$conn = mysqli_connect("localhost", "root", "", "cig_system");
+$db = new Database();
 
-if (!$conn) {
-    die("Database connection failed: " . mysqli_connect_error());
-}
-
-// Get organization count
-$result = mysqli_query($conn, "SELECT COUNT(*) as count FROM organizations WHERE status = 'active'");
-$org_count = mysqli_fetch_assoc($result);
+// Get organization count (users with org_code)
+$org_count = $db->fetchRow("SELECT COUNT(*) as count FROM users WHERE org_code IS NOT NULL AND status = 'active'");
 
 // Get submission count
-$result = mysqli_query($conn, "SELECT COUNT(*) as count FROM submissions");
-$submission_count = mysqli_fetch_assoc($result);
+$submission_count = $db->fetchRow("SELECT COUNT(*) as count FROM submissions");
 
 // Get approval statistics
-$result = mysqli_query($conn, "
+$stats = $db->fetchRow("
     SELECT 
         COUNT(*) as total,
         SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved
     FROM submissions
 ");
-$stats = mysqli_fetch_assoc($result);
 
 $approval_rate = $stats['total'] > 0 
     ? round(($stats['approved'] / $stats['total']) * 100) 
     : 0;
 
 // Fetch latest announcement from database
-$announcement_query = "SELECT * FROM announcements WHERE is_active = 1 ORDER BY created_at DESC LIMIT 1";
-$announcement_result = mysqli_query($conn, $announcement_query);
-$announcement = mysqli_fetch_assoc($announcement_result) ?? ['content' => 'Welcome to the Admin Dashboard!'];
+$announcement = $db->fetchRow("SELECT * FROM announcements WHERE is_active = 1 ORDER BY created_at DESC LIMIT 1") 
+    ?? ['content' => 'Welcome to the Admin Dashboard!'];
 
 ?>
 <!DOCTYPE html>

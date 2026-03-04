@@ -22,16 +22,17 @@ $search_query = $_GET['search'] ?? '';
 
 // Build query - Only show pending and in_review submissions
 $query = "
-    SELECT s.*, u.full_name as submitted_by_name, o.org_name 
+    SELECT s.*, u.full_name as submitted_by_name, COALESCE(org.org_name, org.full_name) as org_name 
     FROM submissions s
     LEFT JOIN users u ON s.user_id = u.user_id
-    LEFT JOIN organizations o ON s.org_id = o.org_id
+    LEFT JOIN users org ON s.org_id = org.user_id
     WHERE s.status IN ('pending', 'in_review')
 ";
 $params = [];
 
 if ($search_query) {
-    $query .= " AND (s.title LIKE ? OR o.org_name LIKE ?)";
+    $query .= " AND (s.title LIKE ? OR org.org_name LIKE ? OR org.full_name LIKE ?)";
+    $params[] = "%$search_query%";
     $params[] = "%$search_query%";
     $params[] = "%$search_query%";
 }
