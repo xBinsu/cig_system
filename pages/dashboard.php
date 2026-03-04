@@ -350,13 +350,23 @@ if (monthlyData.length > 0) {
 // Status Distribution Chart  
 const statusData = <?php echo json_encode($status_distribution); ?>;
 if (statusData.length > 0) {
+    // Map status to color
+    const statusColorMap = {
+        'approved': '#10b981',      // Green
+        'in_review': '#3b82f6',     // Blue
+        'pending': '#f59e0b',       // Orange
+        'rejected': '#ef4444'       // Red
+    };
+    
+    const statusColors = statusData.map(d => statusColorMap[d.status] || '#9ca3af');
+    
     new Chart(document.getElementById('statusDistributionChart').getContext('2d'), {
         type: 'doughnut',
         data: {
             labels: statusData.map(d => d.status.charAt(0).toUpperCase() + d.status.slice(1)),
             datasets: [{
                 data: statusData.map(d => d.count),
-                backgroundColor: [chartColors.warning, chartColors.success, chartColors.danger],
+                backgroundColor: statusColors,
                 borderColor: '#fff',
                 borderWidth: 2
             }]

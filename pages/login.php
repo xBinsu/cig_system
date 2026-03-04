@@ -2,10 +2,6 @@
 include '../db/config.php';
 session_start();
 
-// Default Admin Account
-$admin_email = "cig@admin.com";
-$admin_password = "admincig123";
-
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -15,16 +11,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = trim($_POST['email']);
         $password = trim($_POST['password']);
 
-        if ($email === $admin_email && $password === $admin_password) {
+        try {
+            $db = new Database();
 
-            $_SESSION['admin_logged_in'] = true;
-            $_SESSION['admin_email'] = $email;
+            // Fetch admin user by email, role, and active status
+            $user = $db->fetchRow(
+                "SELECT * FROM users WHERE email = ? AND role = 'admin' AND status = 'active' LIMIT 1",
+                [$email]
+            );
 
-            header("Location: index.php"); 
-            exit();
+            if ($user && password_verify($password, $user['password_hash'])) {
 
-        } else {
-            $error = "Invalid admin credentials.";
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['admin_id']        = $user['user_id'];
+                $_SESSION['admin_email']     = $user['email'];
+                $_SESSION['admin_name']      = $user['full_name'];
+                $_SESSION['admin_role']      = $user['role'];
+
+                // Update last_login timestamp
+                $db->execute(
+                    "UPDATE users SET last_login = NOW() WHERE user_id = ?",
+                    [$user['user_id']]
+                );
+
+                $db->close();
+                header("Location: index.php");
+                exit();
+
+            } else {
+                $error = "Invalid admin credentials.";
+            }
+
+            $db->close();
+
+        } catch (Exception $e) {
+            $error = "A system error occurred. Please try again.";
+            if (DEBUG_MODE) {
+                $error .= " (" . $e->getMessage() . ")";
+            }
         }
 
     } else {
@@ -83,13 +107,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
           <?php if (!empty($error)) : ?>
             <div class="error-message">
-              <?php echo $error; ?>
+              <?php echo htmlspecialchars($error); ?>
             </div>
           <?php endif; ?>
 
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required
+              value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
           </div>
 
           <div class="form-group">
@@ -109,17 +134,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         </form>
       </div>
-          <footer class="footer">
-            <div class="footer-content">
-             <p>&copy; 2026 Council of Internal Governance. All rights reserved.</p>
-              <p class="footer-subtext">
-                  Designed and developed for efficient governance operations
-              </p>
-            </div>
-          </footer>
+
+      <footer class="footer">
+        <div class="footer-content">
+          <p>&copy; 2026 Council of Internal Governance. All rights reserved.</p>
+          <p class="footer-subtext">
+            Designed and developed for efficient governance operations
+          </p>
+        </div>
+      </footer>
     </div>
   </div>
-
 
 </body>
 </html>

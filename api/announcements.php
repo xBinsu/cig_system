@@ -65,10 +65,10 @@ class AnnouncementAPI {
     /**
      * Create New Announcement
      */
-    public function createAnnouncement($title, $content, $created_by) {
-        $query = "INSERT INTO announcements (title, content, created_by, is_active, created_at) 
-                  VALUES (?, ?, ?, 1, NOW())";
-        $result = $this->db->execute($query, [$title, $content, $created_by]);
+    public function createAnnouncement($title, $content, $created_by, $category = 'General', $priority = 'normal') {
+        $query = "INSERT INTO announcements (title, content, category, priority, created_by, is_active, created_at) 
+                  VALUES (?, ?, ?, ?, ?, 1, NOW())";
+        $result = $this->db->execute($query, [$title, $content, $category, $priority, $created_by]);
         
         if ($result) {
             return $this->db->getLastInsertId();
@@ -79,9 +79,19 @@ class AnnouncementAPI {
     /**
      * Update Announcement
      */
-    public function updateAnnouncement($announcement_id, $title, $content, $updated_by, $is_active = null) {
+    public function updateAnnouncement($announcement_id, $title, $content, $updated_by, $category = null, $priority = null, $is_active = null) {
         $query = "UPDATE announcements SET title = ?, content = ?, updated_by = ?, updated_at = NOW()";
         $params = [$title, $content, $updated_by];
+        
+        if ($category !== null) {
+            $query .= ", category = ?";
+            $params[] = $category;
+        }
+        
+        if ($priority !== null) {
+            $query .= ", priority = ?";
+            $params[] = $priority;
+        }
         
         if ($is_active !== null) {
             $query .= ", is_active = ?";
@@ -152,21 +162,72 @@ try {
             if ($action === 'create') {
                 $title = $_POST['title'] ?? '';
                 $content = $_POST['content'] ?? '';
-                $created_by = $_POST['created_by'] ?? null;
+                $created_by = intval($_POST['created_by'] ?? $_POST['user_id'] ?? 1);
+                $created_by = $created_by > 0 ? $created_by : 1;
+                $category = $_POST['category'] ?? 'General';
+                $priority = $_POST['priority'] ?? 'normal';
 
-                if (empty($title) || empty($content) || !$created_by) {
+                if (empty($title) || empty($content)) {
                     echo json_encode([
                         'success' => false,
-                        'message' => 'Missing required fields'
+                        'message' => 'Missing required fields: title and content are required'
                     ]);
                     break;
                 }
 
-                $announcement_id = $api->createAnnouncement($title, $content, $created_by);
+                $announcement_id = $api->createAnnouncement($title, $content, $created_by, $category, $priority);
                 echo json_encode([
                     'success' => (bool)$announcement_id,
                     'announcement_id' => $announcement_id,
                     'message' => $announcement_id ? 'Announcement created successfully' : 'Failed to create announcement'
+                ]);
+            } elseif ($action === 'update') {
+                // Handle update via POST
+                $announcement_id = $_POST['announcement_id'] ?? null;
+                $title = $_POST['title'] ?? '';
+                $content = $_POST['content'] ?? '';
+                // Fallback: updated_by can come as created_by if JS sends wrong key
+                $updated_by = intval($_POST['updated_by'] ?? $_POST['created_by'] ?? 1);
+                $updated_by = $updated_by > 0 ? $updated_by : 1;
+                $category = $_POST['category'] ?? null;
+                $priority = $_POST['priority'] ?? null;
+                $is_active = isset($_POST['is_active']) ? (bool)$_POST['is_active'] : null;
+
+                if (!$announcement_id || empty($title) || empty($content)) {
+                    $missing = [];
+                    if (!$announcement_id) $missing[] = 'announcement_id';
+                    if (empty($title)) $missing[] = 'title';
+                    if (empty($content)) $missing[] = 'content';
+                    
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Missing required fields: ' . implode(', ', $missing),
+                        'debug' => ['missing' => $missing, 'received' => ['announcement_id' => $announcement_id]]
+                    ]);
+                    break;
+                }
+
+                $result = $api->updateAnnouncement($announcement_id, $title, $content, $updated_by, $category, $priority, $is_active);
+                echo json_encode([
+                    'success' => $result,
+                    'message' => $result ? 'Announcement updated successfully' : 'Failed to update announcement'
+                ]);
+            } elseif ($action === 'delete') {
+                // Handle delete via POST
+                $announcement_id = $_POST['announcement_id'] ?? null;
+
+                if (!$announcement_id) {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Missing required field: announcement_id'
+                    ]);
+                    break;
+                }
+
+                $result = $api->deleteAnnouncement($announcement_id);
+                echo json_encode([
+                    'success' => $result,
+                    'message' => $result ? 'Announcement deleted successfully' : 'Failed to delete announcement'
                 ]);
             } else {
                 echo json_encode([
@@ -184,6 +245,8 @@ try {
                 $title = $_PUT['title'] ?? '';
                 $content = $_PUT['content'] ?? '';
                 $updated_by = $_PUT['updated_by'] ?? null;
+                $category = $_PUT['category'] ?? null;
+                $priority = $_PUT['priority'] ?? null;
                 $is_active = isset($_PUT['is_active']) ? (bool)$_PUT['is_active'] : null;
 
                 if (!$announcement_id || empty($title) || empty($content) || !$updated_by) {
@@ -194,7 +257,7 @@ try {
                     break;
                 }
 
-                $result = $api->updateAnnouncement($announcement_id, $title, $content, $updated_by, $is_active);
+                $result = $api->updateAnnouncement($announcement_id, $title, $content, $updated_by, $category, $priority, $is_active);
                 echo json_encode([
                     'success' => $result,
                     'message' => $result ? 'Announcement updated successfully' : 'Failed to update announcement'
