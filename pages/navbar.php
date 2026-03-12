@@ -24,7 +24,6 @@ $notifications = $notifications ?? [];
   <a href="submissions.php" class="nav-link <?php echo $current_page === 'submissions' ? 'active' : ''; ?>" data-page="submissions"><i></i> <span>Submissions</span></a>
   <a href="review.php" class="nav-link <?php echo $current_page === 'review' ? 'active' : ''; ?>" data-page="review"><i></i> <span>Organizations</span></a>
   <a href="archive.php" class="nav-link <?php echo $current_page === 'archive' ? 'active' : ''; ?>" data-page="archive"><i></i> <span>Document Archive</span></a>
-  <a href="reports.php" class="nav-link <?php echo $current_page === 'reports' ? 'active' : ''; ?>" data-page="reports"><i></i> <span>Reports</span></a>
   <div class="sidebar-footer">
     <button onclick="showLogoutModal()" class="logout-btn"><span>Logout</span></button>
   </div>
@@ -33,15 +32,19 @@ $notifications = $notifications ?? [];
 <!-- LOGOUT CONFIRMATION MODAL -->
 <div id="logoutModal" class="logout-modal-overlay" style="display: none;">
   <div class="logout-modal">
-    <div class="logout-modal-header">
-      <h3>Confirm Logout</h3>
+    <div class="logout-modal-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
     </div>
-    <div class="logout-modal-body">
-      <p>Are you sure you want to logout?</p>
-    </div>
+    <p class="logout-modal-label">CIG ADMIN</p>
+    <h3 class="logout-modal-title">Sign out?</h3>
+    <p class="logout-modal-desc">You're about to sign out of your admin account. Any unsaved changes will be lost.</p>
     <div class="logout-modal-footer">
-      <button onclick="cancelLogout()" class="modal-btn modal-btn-cancel">Cancel</button>
-      <button onclick="confirmLogout()" class="modal-btn modal-btn-confirm">Logout</button>
+      <button onclick="cancelLogout()" class="modal-btn modal-btn-cancel">Stay</button>
+      <button onclick="confirmLogout()" class="modal-btn modal-btn-confirm">Yes, sign out</button>
     </div>
   </div>
 </div>

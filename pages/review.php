@@ -404,10 +404,25 @@ $user_name = $user['full_name'] ?? '';
         for ($i = 1; $i <= 49; $i++): 
           $org = $organizations[$i - 1] ?? null;
         ?>
-          <?php if ($org): ?>
+          <?php if ($org): 
+            $org_code = strtoupper($org['org_code'] ?? '');
+            $logo_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            $logo_path = null;
+            foreach ($logo_extensions as $ext) {
+              $check_path = "../assets/{$org_code}.{$ext}";
+              if (file_exists(__DIR__ . "/../assets/{$org_code}.{$ext}")) {
+                $logo_path = $check_path;
+                break;
+              }
+            }
+          ?>
             <a href="review.php?org=<?php echo htmlspecialchars($org['org_id']); ?>" class="folder-card">
               <div class="folder-icon">
-                <i class="fas fa-folder"></i>
+                <?php if ($logo_path): ?>
+                  <img src="<?php echo htmlspecialchars($logo_path); ?>" alt="<?php echo htmlspecialchars($org_code); ?> logo" class="org-logo-img">
+                <?php else: ?>
+                  <i class="fas fa-folder"></i>
+                <?php endif; ?>
               </div>
               <div class="folder-content">
                 <p class="folder-name"><?php echo htmlspecialchars($org['org_name']); ?></p>
@@ -609,6 +624,14 @@ function downloadSubmission(id) {
   50% {
     transform: translateY(-8px);
   }
+}
+
+.org-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
 }
 
 .org-header-content {
@@ -1030,9 +1053,19 @@ function downloadSubmission(id) {
 }
 
 .folder-icon {
-  font-size: 48px;
+  font-size: 36px;
   color: #10b981;
   animation: iconBounce 2s ease-in-out infinite;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
 @keyframes iconBounce {
