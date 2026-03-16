@@ -672,9 +672,10 @@ $user_name = $user['full_name'] ?? '';
 .modal-box-sm { max-width: 460px; }
 
 .modal-box-lg {
-  max-width: 860px;
-  width: 96%;
-  max-height: 92vh;
+  max-width: 1100px;
+  width: 92vw;
+  height: 90vh;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -702,13 +703,13 @@ $user_name = $user['full_name'] ?? '';
 /* ── FILE VIEWER WRAP ───────────────────────────────────────── */
 .preview-viewer-wrap {
   flex: 1;
-  min-height: 460px;
   position: relative;
-  background: #f0f4f8;
+  background: #e8ecef;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  min-height: 0; /* critical for flex children to shrink properly */
 }
 
 .preview-loading {
@@ -755,9 +756,10 @@ $user_name = $user['full_name'] ?? '';
 .preview-unsupported span { font-size: 0.85em; }
 
 .preview-iframe {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-height: 460px;
   border: none;
   background: white;
   display: block;
@@ -795,8 +797,7 @@ $user_name = $user['full_name'] ?? '';
 
 @media(max-width:700px) {
   .preview-meta-bar { grid-template-columns: repeat(2,1fr); }
-  .modal-box-lg { max-height: 98vh; width: 99%; }
-  .preview-viewer-wrap { min-height: 300px; }
+  .modal-box-lg { height: 98vh; max-height: 98vh; width: 100vw; border-radius: 12px; }
 }
 
 @keyframes modalPop {
