@@ -21,15 +21,15 @@ $selected_org_id = $_GET['org'] ?? null;
 $selected_submission_id = $_GET['id'] ?? null;
 $search_query = $_GET['search'] ?? '';
 
-// Get all org users (users with org_code set)
+// Get all organizations (49 for now - can be changed later)
 $organizations = [];
 try {
     $organizations = $db->fetchAll("
-        SELECT user_id as org_id, COALESCE(org_name, full_name) as org_name, org_code,
-               (SELECT COUNT(*) FROM submissions WHERE org_id = users.user_id AND status = 'approved') as submission_count
+        SELECT user_id as org_id, org_name, org_code,
+               (SELECT COUNT(*) FROM submissions WHERE (org_id = users.user_id OR user_id = users.user_id) AND status = 'approved') as submission_count
         FROM users
-        WHERE org_code IS NOT NULL
-        ORDER BY COALESCE(org_name, full_name) ASC
+        WHERE org_code IS NOT NULL AND status = 'active'
+        ORDER BY org_name ASC
         LIMIT 49
     ");
     
@@ -71,11 +71,10 @@ $submissions = [];
 $current_org = null;
 if ($selected_org_id) {
     try {
-        // Get organization details from users table
+        // Get organization details
         $current_org = $db->fetchRow("
-            SELECT user_id as org_id, COALESCE(org_name, full_name) as org_name, org_code, description, 
-                   contact_person, phone, email, status
-            FROM users WHERE user_id = ? AND org_code IS NOT NULL
+            SELECT user_id as org_id, org_name, org_code, description, email, phone, contact_person, status
+            FROM users WHERE user_id = ?
         ", [$selected_org_id]);
         
         // Use sample organization if not found
@@ -88,15 +87,17 @@ if ($selected_org_id) {
             ];
         }
         
-        // Get approved submissions for this organization
+        // Only show approved submissions — admin has marked these as done from submissions.php
         $query = "
-            SELECT s.*, u.full_name as submitted_by_name, 
+            SELECT s.*, u.full_name as submitted_by_name,
+                   COALESCE(u.org_name, o.org_name) as org_name,
                    (SELECT COUNT(*) FROM reviews WHERE submission_id = s.submission_id) as review_count
             FROM submissions s
             LEFT JOIN users u ON s.user_id = u.user_id
-            WHERE s.org_id = ? AND s.status = 'approved'
+            LEFT JOIN users o ON s.org_id = o.user_id
+            WHERE (s.org_id = ? OR s.user_id = ?) AND s.status = 'approved'
         ";
-        $params = [$selected_org_id];
+        $params = [$selected_org_id, $selected_org_id];
         
         if ($search_query) {
             $query .= " AND (s.title LIKE ? OR u.full_name LIKE ?)";
@@ -117,12 +118,13 @@ $submission = null;
 if ($selected_submission_id && $selected_org_id) {
     try {
         $submission = $db->fetchRow("
-            SELECT s.*, u.full_name as submitted_by_name, COALESCE(org.org_name, org.full_name) as org_name
+            SELECT s.*, u.full_name as submitted_by_name,
+                   COALESCE(u.org_name, o.org_name) as org_name
             FROM submissions s
             LEFT JOIN users u ON s.user_id = u.user_id
-            LEFT JOIN users org ON s.org_id = org.user_id
-            WHERE s.submission_id = ? AND s.org_id = ?
-        ", [$selected_submission_id, $selected_org_id]);
+            LEFT JOIN users o ON s.org_id = o.user_id
+            WHERE s.submission_id = ? AND (s.org_id = ? OR s.user_id = ?)
+        ", [$selected_submission_id, $selected_org_id, $selected_org_id]);
         
         // Get reviews for this submission
         if ($submission) {
@@ -151,30 +153,35 @@ if ($selected_submission_id && $selected_org_id) {
     }
 }
 
-// Handle review submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    $action = $_POST['action'];
-    $submission_id = $_POST['submission_id'];
+    $action        = $_POST['action'];
+    $submission_id = (int)$_POST['submission_id'];
+    $org_id        = (int)($_GET['org'] ?? 0);
 
     try {
-        if ($action === 'approve') {
-            $db->update('submissions', ['status' => 'approved'], 'submission_id = ?', [$submission_id]);
-            $db->insert('reviews', [
-                'submission_id' => $submission_id,
-                'reviewer_id' => 1,
-                'feedback' => $_POST['feedback'] ?? '',
-                'status' => 'approved'
-            ]);
-        } elseif ($action === 'reject') {
-            $db->update('submissions', ['status' => 'rejected'], 'submission_id = ?', [$submission_id]);
-            $db->insert('reviews', [
-                'submission_id' => $submission_id,
-                'reviewer_id' => 1,
-                'feedback' => $_POST['feedback'] ?? '',
-                'status' => 'rejected'
-            ]);
+        if ($action === 'mark_done') {
+            // Admin acknowledgment only — marks their copy as reviewed/done
+            $admin_id = $_SESSION['admin_id'] ?? 1;
+            $db->update('submissions',
+                ['status' => 'approved', 'updated_at' => date('Y-m-d H:i:s')],
+                'submission_id = ?', [$submission_id]
+            );
+            // Record that admin has reviewed it
+            $existing = $db->fetchRow(
+                "SELECT review_id FROM reviews WHERE submission_id = ? AND reviewer_id = ?",
+                [$submission_id, $admin_id]
+            );
+            if (!$existing) {
+                $db->insert('reviews', [
+                    'submission_id' => $submission_id,
+                    'reviewer_id'   => $admin_id,
+                    'feedback'      => 'Marked as done by admin.',
+                    'status'        => 'completed',
+                    'reviewed_at'   => date('Y-m-d H:i:s')
+                ]);
+            }
         }
-        header('Location: review.php?org=' . $submission['org_id'] . '&id=' . $submission_id . '&success=1');
+        header('Location: review.php?org=' . $org_id . '&id=' . $submission_id . '&success=1');
         exit();
     } catch (Exception $e) {
         error_log('Review Update Error: ' . $e->getMessage());
@@ -186,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Review & Approval - Admin</title>
+<title>Final Review - Admin</title>
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/navbar.css">
 <link rel="stylesheet" href="../css/components.css">
@@ -205,7 +212,7 @@ $user_name = $user['full_name'] ?? '';
   <!-- REVIEW & APPROVAL & ORGANIZATIONS -->
   <div class="page active">
     <div class="page-header">
-      <h2><i class="fas fa-cogs"></i> Organization Management & Reviews</h2>
+      <h2><i class="fas fa-check-double"></i> Final Review & Approval</h2>
       <?php if (!$selected_org_id && !$selected_submission_id): ?>
       <div class="page-header-search">
         <div class="search-input-wrapper-header">
@@ -223,7 +230,7 @@ $user_name = $user['full_name'] ?? '';
     </div>
     <?php endif; ?>
 
-    <?php if ($selected_submission_id && $submission && $submission['status'] === 'approved'): ?>
+    <?php if ($selected_submission_id && $submission): ?>
       <!-- SUBMISSION DETAIL VIEW -->
       <div class="breadcrumb-nav">
         <a href="review.php"><i class="fas fa-folder-open"></i> Organizations</a>
@@ -236,8 +243,8 @@ $user_name = $user['full_name'] ?? '';
       <div class="submission-detail-card">
         <div class="submission-header">
           <h3><?php echo htmlspecialchars($submission['title']); ?></h3>
-          <span class="status-badge <?php echo strtolower($submission['status']); ?>">
-            <i class="fas fa-check-circle"></i> <?php echo ucfirst($submission['status']); ?>
+          <span class="status-badge approved">
+            <i class="fas fa-check-double"></i> Reviewed &amp; Done
           </span>
         </div>
 
@@ -275,8 +282,9 @@ $user_name = $user['full_name'] ?? '';
                     <span class="reviewer-name"><?php echo htmlspecialchars($review['full_name'] ?? 'Unknown'); ?></span>
                     <span class="review-date"><i class="fas fa-clock"></i> <?php echo date('M d, Y H:i', strtotime($review['reviewed_at'])); ?></span>
                   </div>
-                  <span class="review-status-badge <?php echo strtolower($review['status']); ?>">
-                    <?php echo ucfirst($review['status']); ?>
+                  <span class="review-status-badge <?php echo $review['status'] === 'completed' ? 'approved' : strtolower($review['status']); ?>">
+                    <i class="fas fa-<?php echo $review['status'] === 'completed' ? 'check-circle' : 'clock'; ?>"></i>
+                    <?php echo $review['status'] === 'completed' ? 'Reviewed' : ucfirst($review['status']); ?>
                   </span>
                 </div>
                 <div class="review-feedback">
@@ -293,14 +301,24 @@ $user_name = $user['full_name'] ?? '';
         <?php endif; ?>
       </div>
 
-      <!-- SUBMISSION ACTIONS -->
+
+      <!-- SUBMISSION STATUS FOOTER -->
       <div class="submission-actions-card">
         <div class="actions-header">
-          <h3><i class="fas fa-check-double"></i> Submission Complete</h3>
-          <p>This submission has been approved and is ready for organizational review.</p>
+          <h3><i class="fas fa-folder-open"></i> Admin Copy</h3>
+          <p>This submission was reviewed and marked as done. It is stored here for your records.</p>
         </div>
-        <div class="actions-buttons">
-          <a href="review.php?org=<?php echo $selected_org_id; ?>" class="action-link" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46; border-color: rgba(6, 95, 70, 0.2);">
+        <div style="margin-top:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <span style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;
+                       background:#d1fae5;color:#065f46;border-radius:10px;
+                       font-weight:700;font-size:0.95em;border:1.5px solid #6ee7b7;">
+            <i class="fas fa-check-double" style="font-size:1.1em;"></i>
+            Reviewed &amp; Done
+          </span>
+          <a href="review.php?org=<?php echo $selected_org_id; ?>"
+             style="padding:12px 28px;background:#f0f0f0;color:#4a5568;border-radius:10px;
+                    text-decoration:none;font-weight:600;font-size:0.95em;
+                    display:inline-flex;align-items:center;gap:8px;">
             <i class="fas fa-arrow-left"></i> Back to Organization
           </a>
         </div>
@@ -321,7 +339,7 @@ $user_name = $user['full_name'] ?? '';
         <div class="org-header-content">
           <div class="org-header-title">
             <h3><?php echo htmlspecialchars($current_org['org_name']); ?></h3>
-            <span class="org-status-badge"><?php echo strtoupper($current_org['status'] ?? 'active'); ?></span>
+            <span class="org-status-badge"><?php echo strtoupper($current_org['status'] ?? 'ACTIVE'); ?></span>
           </div>
           <div class="org-header-meta">
             <span class="meta-item"><i class="fas fa-code"></i> <?php echo htmlspecialchars($current_org['org_code'] ?? 'N/A'); ?></span>
@@ -356,28 +374,46 @@ $user_name = $user['full_name'] ?? '';
               <th><i class="fas fa-tag"></i> Status</th>
               <th><i class="fas fa-user"></i> Submitted By</th>
               <th><i class="fas fa-calendar"></i> Date</th>
-              <th><i class="fas fa-comments"></i> Reviews</th>
+              <th><i class="fas fa-eye"></i> Reviewed</th>
               <th><i class="fas fa-cog"></i> Action</th>
             </tr>
           </thead>
           <tbody>
             <?php if (!empty($submissions)): ?>
               <?php foreach ($submissions as $index => $sub): ?>
-                <tr>
+                <?php $is_done = ($sub['status'] === 'approved'); ?>
+                <tr style="<?php echo $is_done ? 'background:#f0fdf4;' : ''; ?>">
                   <td class="ref-number">#<?php echo str_pad($index + 1, 3, '0', STR_PAD_LEFT); ?></td>
                   <td class="title-cell"><strong><?php echo htmlspecialchars($sub['title']); ?></strong></td>
-                  <td><span class="status-badge <?php echo strtolower($sub['status']); ?>"><i class="fas fa-check-circle"></i> <?php echo ucfirst($sub['status']); ?></span></td>
+                  <td>
+                    <?php if ($is_done): ?>
+                      <span class="status-badge approved"><i class="fas fa-check-circle"></i> Done</span>
+                    <?php else: ?>
+                      <span class="status-badge in_review"><i class="fas fa-paper-plane"></i> Forwarded</span>
+                    <?php endif; ?>
+                  </td>
                   <td><?php echo htmlspecialchars($sub['submitted_by_name'] ?? 'N/A'); ?></td>
                   <td><?php echo date('M d, Y', strtotime($sub['submitted_at'])); ?></td>
-                  <td class="review-count"><span class="badge-count"><?php echo $sub['review_count'] ?? 0; ?></span></td>
+                  <td class="review-count">
+                    <?php if ($is_done): ?>
+                      <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
+                                   background:#d1fae5;color:#065f46;border-radius:6px;
+                                   font-size:0.8em;font-weight:700;">
+                        <i class="fas fa-check"></i> Yes
+                      </span>
+                    <?php else: ?>
+                      <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
+                                   background:#fef9c3;color:#78350f;border-radius:6px;
+                                   font-size:0.8em;font-weight:700;">
+                        <i class="fas fa-clock"></i> Pending
+                      </span>
+                    <?php endif; ?>
+                  </td>
                   <td>
                     <div class="action-buttons">
-                      <a href="review.php?org=<?php echo $selected_org_id; ?>&id=<?php echo $sub['submission_id']; ?>" class="action-link" title="Preview">
-                        <i class="fas fa-eye"></i> Preview
+                      <a href="review.php?org=<?php echo $selected_org_id; ?>&id=<?php echo $sub['submission_id']; ?>" class="btn-action btn-view" title="Preview">
+                        <i class="fas fa-eye"></i> <?php echo $is_done ? 'View' : 'Review'; ?>
                       </a>
-                      <button class="action-link" onclick="downloadSubmission(<?php echo $sub['submission_id']; ?>)" title="Download" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46; border-color: rgba(6, 95, 70, 0.2);">
-                        <i class="fas fa-download"></i> Download
-                      </button>
                     </div>
                   </td>
                 </tr>
@@ -404,25 +440,10 @@ $user_name = $user['full_name'] ?? '';
         for ($i = 1; $i <= 49; $i++): 
           $org = $organizations[$i - 1] ?? null;
         ?>
-          <?php if ($org): 
-            $org_code = strtoupper($org['org_code'] ?? '');
-            $logo_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            $logo_path = null;
-            foreach ($logo_extensions as $ext) {
-              $check_path = "../assets/{$org_code}.{$ext}";
-              if (file_exists(__DIR__ . "/../assets/{$org_code}.{$ext}")) {
-                $logo_path = $check_path;
-                break;
-              }
-            }
-          ?>
+          <?php if ($org): ?>
             <a href="review.php?org=<?php echo htmlspecialchars($org['org_id']); ?>" class="folder-card">
               <div class="folder-icon">
-                <?php if ($logo_path): ?>
-                  <img src="<?php echo htmlspecialchars($logo_path); ?>" alt="<?php echo htmlspecialchars($org_code); ?> logo" class="org-logo-img">
-                <?php else: ?>
-                  <i class="fas fa-folder"></i>
-                <?php endif; ?>
+                <i class="fas fa-folder"></i>
               </div>
               <div class="folder-content">
                 <p class="folder-name"><?php echo htmlspecialchars($org['org_name']); ?></p>
@@ -508,10 +529,6 @@ $user_name = $user['full_name'] ?? '';
 <script src="../js/navbar.js"></script>
 <script src="../js/review.js"></script>
 <script>
-function downloadSubmission(id) {
-    console.log('Downloading submission: ' + id);
-    // Implementation would go here
-}
 </script>
 
 <style>
@@ -624,14 +641,6 @@ function downloadSubmission(id) {
   50% {
     transform: translateY(-8px);
   }
-}
-
-.org-logo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  display: block;
 }
 
 .org-header-content {
@@ -1053,19 +1062,9 @@ function downloadSubmission(id) {
 }
 
 .folder-icon {
-  font-size: 36px;
+  font-size: 48px;
   color: #10b981;
   animation: iconBounce 2s ease-in-out infinite;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  overflow: hidden;
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
 @keyframes iconBounce {
@@ -1354,6 +1353,11 @@ function downloadSubmission(id) {
   color: #991b1b;
 }
 
+.status-badge.in_review {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
 .status-badge i {
   margin-right: 4px;
 }
@@ -1402,15 +1406,7 @@ function downloadSubmission(id) {
   transform: translateY(-2px);
 }
 
-.btn-action.btn-download {
-  background: #d1fae5;
-  color: #065f46;
-}
 
-.btn-action.btn-download:hover {
-  background: #a7f3d0;
-  transform: translateY(-2px);
-}
 
 .btn-action i {
   font-size: 0.9em;
