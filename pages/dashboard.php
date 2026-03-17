@@ -197,8 +197,20 @@ $user_name = $user['full_name'] ?? '';
 <!-- DASHBOARD -->
 <div class="main">
     <div style="padding: 30px;">
-        <div class="page-header">
-            <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+                <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+            <div>
+                <h2 style="margin:0;"><i class="fas fa-chart-line"></i> Dashboard</h2>
+                <p class="page-subtitle" style="margin:4px 0 0;color:#4a5568;font-size:0.9em;font-weight:400;">Overview of submissions, approvals, and organization activity</p>
+            </div>
+            <div style="display:inline-flex;align-items:center;gap:0.5rem;
+                        background:#fff;border:1.5px solid #e0f2e0;border-radius:10px;
+                        padding:0.4rem 1rem;font-size:0.84rem;font-weight:600;color:#2e7d32;">
+                <i class="fas fa-calendar-alt" style="font-size:0.8rem;color:#81a888;"></i>
+                <span><?= date('l, F j, Y') ?></span>
+                <span style="color:#c8e6c9;">|</span>
+                <i class="fas fa-clock" style="font-size:0.8rem;color:#81a888;"></i>
+                <span class="live-clock-span"><?= date('h:i:s A') ?></span>
+            </div>
         </div>
 
         <div class="filter-section">
@@ -312,6 +324,19 @@ $user_name = $user['full_name'] ?? '';
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function(){
+    function pad(n){return n<10?'0'+n:n;}
+    function tick(){
+        var now=new Date(),h=now.getHours(),m=pad(now.getMinutes()),s=pad(now.getSeconds());
+        var ap=h>=12?'PM':'AM'; h=h%12||12;
+        document.querySelectorAll('.live-clock-span').forEach(function(el){
+            el.textContent=h+':'+m+':'+s+' '+ap;
+        });
+    }
+    tick(); setInterval(tick,1000);
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="../js/navbar.js"></script>
 

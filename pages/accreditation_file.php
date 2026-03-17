@@ -19,72 +19,106 @@ $conn->close();
 if (!$row) { http_response_code(404); die("Document not found"); }
 
 $fileName   = $row['file_name'];
-$storedPath = $row['file_path'];   // "uploads/accreditation/16/file.pdf"
+$storedPath = $row['file_path'];
 $userId     = (int)$row['user_id'];
 $ext        = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 $base       = basename($fileName);
 $sep        = DIRECTORY_SEPARATOR;
 
+// Build absolute htdocs path by splitting __DIR__
 // __DIR__ = C:\xampp\htdocs\cig_system\pages
-// Resolve WITHOUT using ".." — build absolute path directly
-// Split __DIR__ by separator, remove last 2 parts (pages, cig_system), add cig_user/org-dashboard
-$parts   = explode($sep, rtrim(__DIR__, $sep));   // [..., 'cig_system', 'pages']
-array_pop($parts);   // remove 'pages'
-array_pop($parts);   // remove 'cig_system'
-$htdocs  = implode($sep, $parts);                 // C:\xampp\htdocs
+$parts  = explode($sep, rtrim(__DIR__, $sep));
+array_pop($parts); // remove 'pages'
+array_pop($parts); // remove 'cig_system'
+$htdocs = implode($sep, $parts); // C:\xampp\htdocs
 
-$orgDash = $htdocs . $sep . 'cig_user' . $sep . 'org-dashboard';
+// All sibling project folders to search
+$searchRoots = [
+    $htdocs . $sep . 'cig_user'        . $sep . 'org-dashboard',
+    $htdocs . $sep . 'cig_user',
+    $htdocs . $sep . 'cig_system'      . $sep . 'pages',
+    $htdocs . $sep . 'cig_system',
+    $htdocs . $sep . 'cig_superadmin'  . $sep . 'pages',
+    $htdocs . $sep . 'cig_superadmin',
+];
 
-// Build candidates — all absolute, no ".." anywhere
-$candidates = [];
-
-// 1. orgDash + stored path exactly
-if ($storedPath) {
-    $candidates[] = $orgDash . $sep . str_replace(['/', '\\'], $sep, ltrim($storedPath, '/\\'));
+// Recursive search for the exact filename
+function findFile($dirs, $filename, $sep) {
+    foreach ($dirs as $root) {
+        if (!is_dir($root)) continue;
+        $iter = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($root, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+        foreach ($iter as $file) {
+            if ($file->isFile() && $file->getFilename() === $filename) {
+                return $file->getPathname();
+            }
+        }
+    }
+    return null;
 }
 
-// 2. orgDash + uploads/accreditation/{uid}/{base}
-$candidates[] = $orgDash . $sep . 'uploads' . $sep . 'accreditation' . $sep . $userId . $sep . $base;
-
-// 3. orgDash + uploads/accreditation/{base}
-$candidates[] = $orgDash . $sep . 'uploads' . $sep . 'accreditation' . $sep . $base;
-
-// 4. orgDash + uploads/{base}
-$candidates[] = $orgDash . $sep . 'uploads' . $sep . $base;
-
-// Find file
-$diskPath = null;
-foreach ($candidates as $c) {
-    if (file_exists($c) && is_file($c)) { $diskPath = $c; break; }
-}
+$diskPath = findFile($searchRoots, $base, $sep);
 
 if (!$diskPath) {
+    // Show debug with a directory listing of all 'accreditation' folders found
+    $accredDirs = [];
+    foreach ($searchRoots as $root) {
+        if (!is_dir($root)) continue;
+        $iter = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($root, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+        foreach ($iter as $f) {
+            if ($f->isDir() && strtolower($f->getFilename()) === 'accreditation') {
+                $accredDirs[] = $f->getPathname();
+            }
+        }
+    }
+
     http_response_code(404);
     header('Content-Type: text/html; charset=utf-8');
-    // Also check if the file exists using glob as an alternative test
-    $globTest = glob($orgDash . $sep . 'uploads' . $sep . 'accreditation' . $sep . $userId . $sep . '*');
     echo '<!DOCTYPE html><html><head><meta charset="UTF-8">
     <style>body{font-family:Arial,sans-serif;padding:1.5rem;background:#f9f9f9;}
-    h3{color:#c0392b;}code{background:#f0f0f0;padding:2px 5px;border-radius:3px;font-size:.82em;display:block;margin:2px 0;word-break:break-all;}</style></head><body>
-    <h3>File not found</h3>
-    <p><b>file_name:</b> <code>' . htmlspecialchars($fileName) . '</code></p>
-    <p><b>file_path:</b> <code>' . htmlspecialchars($storedPath ?? '') . '</code></p>
-    <p><b>htdocs:</b> <code>' . htmlspecialchars($htdocs) . '</code></p>
-    <p><b>orgDash:</b> <code>' . htmlspecialchars($orgDash) . '</code></p>
-    <p><b>orgDash exists:</b> <code>' . (is_dir($orgDash) ? 'YES' : 'NO — wrong path!') . '</code></p>
-    <p><b>Tried:</b></p>';
-    foreach ($candidates as $c) { echo '<code>' . htmlspecialchars($c) . ' [' . (file_exists($c)?'EXISTS':'missing') . ']</code>'; }
-    if ($globTest !== false) {
-        echo '<p><b>Files in accreditation/' . $userId . '/:</b></p>';
-        if (empty($globTest)) { echo '<code>(folder empty or not found)</code>'; }
-        foreach ($globTest as $g) { echo '<code>' . htmlspecialchars($g) . '</code>'; }
+    h3{color:#c0392b;}h4{color:#333;margin:1rem 0 .3rem;}
+    code{background:#f0f0f0;padding:2px 5px;border-radius:3px;font-size:.82em;display:block;margin:2px 0;word-break:break-all;}
+    .ok{color:green;}.no{color:#999;}</style></head><body>
+    <h3>File not found: ' . htmlspecialchars($base) . '</h3>
+    <p><b>Searched in:</b></p>';
+    foreach ($searchRoots as $r) {
+        echo '<code class="' . (is_dir($r)?'ok':'no') . '">' . htmlspecialchars($r) . ' [' . (is_dir($r)?'exists':'NOT FOUND') . ']</code>';
+    }
+    echo '<h4>All "accreditation" folders found:</h4>';
+    if (empty($accredDirs)) {
+        echo '<code>None found</code>';
+    } else {
+        foreach ($accredDirs as $d) {
+            echo '<code>' . htmlspecialchars($d) . '</code>';
+            $files = glob($d . $sep . '*');
+            foreach (($files ?: []) as $f) {
+                echo '<code>&nbsp;&nbsp;&nbsp;↳ ' . htmlspecialchars(basename($f)) . '</code>';
+            }
+            // Also check subdirs
+            $subdirs = glob($d . $sep . '*', GLOB_ONLYDIR);
+            foreach (($subdirs ?: []) as $sd) {
+                $subfiles = glob($sd . $sep . '*');
+                echo '<code>&nbsp;&nbsp;&nbsp;/' . htmlspecialchars(basename($sd)) . '/</code>';
+                foreach (($subfiles ?: []) as $sf) {
+                    echo '<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ ' . htmlspecialchars(basename($sf)) . '</code>';
+                }
+            }
+        }
     }
     echo '</body></html>';
     exit;
 }
 
-$mimeMap = ['pdf'=>'application/pdf','docx'=>'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'doc'=>'application/msword','xlsx'=>'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+// ── Found — stream it ─────────────────────────────────────────────────────────
+$mimeMap = ['pdf'=>'application/pdf',
+    'docx'=>'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'doc'=>'application/msword',
+    'xlsx'=>'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'png'=>'image/png','jpg'=>'image/jpeg','jpeg'=>'image/jpeg'];
 $mime = $row['mime_type'] ?: ($mimeMap[$ext] ?? 'application/octet-stream');
 

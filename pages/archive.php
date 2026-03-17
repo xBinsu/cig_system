@@ -88,11 +88,12 @@ $user_name    = $user['full_name'] ?? '';
 <div class="page active">
 
   <!-- PAGE HEADER -->
-  <div class="page-header">
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
     <div>
       <h2><i class="fas fa-archive"></i> Document Archive</h2>
       <p class="page-subtitle">Rejected submissions history &amp; records</p>
     </div>
+    <div style="display:inline-flex;align-items:center;gap:0.5rem;background:#fff;border:1.5px solid #e0f2e0;border-radius:10px;padding:0.4rem 1rem;font-size:0.84rem;font-weight:600;color:#2e7d32;"><i class="fas fa-calendar-alt" style="font-size:0.8rem;color:#81a888;"></i><span><?= date('l, F j, Y') ?></span><span style="color:#c8e6c9;">|</span><i class="fas fa-clock" style="font-size:0.8rem;color:#81a888;"></i><span class="live-clock-span"><?= date('h:i:s A') ?></span></div>
   </div>
 
   <!-- STAT CARDS -->
@@ -659,6 +660,36 @@ function toggleNotificationPanel() {
   const p = document.getElementById('notificationPanel');
   if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
+</script>
+
+<script>
+(function() {
+    function pad(n) { return n < 10 ? '0' + n : n; }
+    function tick() {
+        var now = new Date();
+        var h = now.getHours(), m = pad(now.getMinutes()), s = pad(now.getSeconds());
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        document.querySelectorAll('.live-clock-span').forEach(function(el) {
+            el.textContent = h + ':' + m + ':' + s + ' ' + ampm;
+        });
+    }
+    tick();
+    setInterval(tick, 1000);
+})();
+</script>
+<script>
+(function(){
+  function pad(n){return n<10?'0'+n:n;}
+  function tick(){
+    var now=new Date(),h=now.getHours(),m=pad(now.getMinutes()),s=pad(now.getSeconds());
+    var ap=h>=12?'PM':'AM'; h=h%12||12;
+    document.querySelectorAll('.live-clock-span').forEach(function(el){
+      el.textContent=h+':'+m+':'+s+' '+ap;
+    });
+  }
+  tick(); setInterval(tick,1000);
+})();
 </script>
 </body>
 </html>
