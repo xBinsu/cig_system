@@ -252,25 +252,25 @@ $user_name = $user['full_name'] ?? '';
         <div class="charts-section">
             <div class="chart-card">
                 <h4 class="chart-title"><i class="fas fa-chart-line"></i> Monthly Submission Trend</h4>
-                <canvas id="monthlyTrendChart" style="max-height: 250px;"></canvas>
+                <div style="position:relative;height:250px;"><canvas id="monthlyTrendChart"></canvas></div>
             </div>
             <div class="chart-card">
                 <h4 class="chart-title"><i class="fas fa-chart-doughnut"></i> Status Distribution</h4>
-                <canvas id="statusDistributionChart" style="max-height: 250px;"></canvas>
+                <div style="position:relative;height:250px;"><canvas id="statusDistributionChart"></canvas></div>
             </div>
         </div>
 
         <div class="full-width-chart">
             <div class="chart-card">
                 <h4 class="chart-title"><i class="fas fa-bars"></i> Submissions per Organization</h4>
-                <canvas id="orgSubmissionsChart" style="max-height: 250px;"></canvas>
+                <div style="position:relative;height:250px;"><canvas id="orgSubmissionsChart"></canvas></div>
             </div>
         </div>
 
         <div class="charts-section">
             <div class="chart-card">
                 <h4 class="chart-title"><i class="fas fa-chart-line"></i> Approved vs Rejected Trend</h4>
-                <canvas id="approvalTrendChart" style="max-height: 250px;"></canvas>
+                <div style="position:relative;height:250px;"><canvas id="approvalTrendChart"></canvas></div>
             </div>
             <div class="insights-panel">
                 <h4 class="insights-title"><i class="fas fa-lightbulb"></i> Smart Insights</h4>
@@ -320,8 +320,6 @@ $user_name = $user['full_name'] ?? '';
         </div>
     </div>
 </div>
-  <?php include 'footer.php'; ?>
-
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -497,5 +495,6 @@ function exportCharts() {
     html2pdf().set(opt).from(element).save();
 }
 </script>
+  <?php include 'footer.php'; ?>
 </body>
 </html>

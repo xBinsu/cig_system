@@ -181,6 +181,7 @@ function resolveLogoSrc($logoPath) {
 .dbtn.approve:hover { background: #bbf7d0; }
 .dbtn.reject  { background: #fee2e2; color: #dc2626; }
 .dbtn.reject:hover  { background: #fecaca; }
+.dbtn.lock    { background: #f3f4f6; color: #9ca3af; cursor: not-allowed; border: 1.5px dashed #d1d5db; }
 .doc-none { font-size: 0.76rem; color: #b0c8b0; font-style: italic; padding: 0.6rem 0; }
 
 /* Card footer */
@@ -500,9 +501,15 @@ $user_name    = $_SESSION['admin_email'] ?? 'Admin';
                         <i class="fas fa-times"></i>
                     </button>
                     <?php elseif ($dstat==='approved'): ?>
+                    <?php if ($verified): ?>
+                    <button class="dbtn lock" disabled title="Revoke accreditation first to undo approvals">
+                        <i class="fas fa-lock"></i>
+                    </button>
+                    <?php else: ?>
                     <button class="dbtn reject" title="Undo approval" onclick="openReview(<?= $docId ?>,<?= $uid ?>,'reject','<?= addslashes(htmlspecialchars($adoc['label'])) ?>')">
                         <i class="fas fa-undo"></i>
                     </button>
+                    <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -572,17 +579,79 @@ $user_name    = $_SESSION['admin_email'] ?? 'Admin';
 
 <!-- Preview modal -->
 <div class="ar-modal-bg" id="arPreviewBg">
-    <div class="ar-modal" style="max-width:900px;">
+    <div class="ar-modal" style="max-width:1100px;width:96vw;max-height:96vh;">
         <div class="ar-modal-hd">
             <i class="fas fa-eye"></i>
             <h2 id="arPrevTitle">View Document</h2>
             <button class="ar-modal-x" onclick="closePreview()"><i class="fas fa-times"></i></button>
         </div>
-        <div class="ar-modal-bd">
-            <iframe class="ar-iframe" id="arPrevFrame" src="" title="Preview" style="height:500px;margin-bottom:0;"></iframe>
+        <div class="ar-modal-bd" style="padding:0.75rem;">
+            <iframe class="ar-iframe" id="arPrevFrame" src="" title="Preview" style="height:72vh;margin-bottom:0;border-radius:6px;"></iframe>
         </div>
         <div class="ar-modal-ft">
             <button class="ar-mbtn cancel" onclick="closePreview()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Grant confirmation modal -->
+<div class="ar-modal-bg" id="grantModalBg">
+    <div class="ar-modal" style="max-width:420px;">
+        <div class="ar-modal-hd" style="background:#14532d;">
+            <i class="fas fa-shield-check" style="color:#86efac;"></i>
+            <h2>Grant System Access</h2>
+            <button class="ar-modal-x" onclick="closeGrantModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="ar-modal-bd" style="padding:1.6rem 1.5rem;">
+            <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:1rem;">
+                <div style="width:60px;height:60px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-unlock" style="font-size:1.6rem;color:#16a34a;"></i>
+                </div>
+                <div>
+                    <p style="font-weight:700;font-size:1rem;color:#1a1a1a;margin:0 0 0.4rem;">Grant Full Access?</p>
+                    <p id="grantOrgName" style="font-size:0.9rem;color:#6b7280;margin:0 0 0.6rem;"></p>
+                    <p style="font-size:0.82rem;color:#9ca3af;margin:0;line-height:1.5;">This organization has met all requirements. Granting access will allow them to use all features of the CIG system immediately.</p>
+                </div>
+            </div>
+        </div>
+        <div class="ar-modal-ft" style="justify-content:center;gap:0.75rem;">
+            <button class="ar-mbtn cancel" style="min-width:110px;" onclick="closeGrantModal()">
+                <i class="fas fa-arrow-left"></i> Cancel
+            </button>
+            <button class="ar-mbtn do-approve" style="min-width:140px;" id="grantConfirmBtn" onclick="confirmGrant()">
+                <i class="fas fa-unlock"></i> Yes, Grant Access
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Revoke confirmation modal -->
+<div class="ar-modal-bg" id="revokeModalBg">
+    <div class="ar-modal" style="max-width:420px;">
+        <div class="ar-modal-hd" style="background:#7f1d1d;">
+            <i class="fas fa-shield-exclamation" style="color:#fca5a5;"></i>
+            <h2>Revoke Accreditation</h2>
+            <button class="ar-modal-x" onclick="closeRevokeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="ar-modal-bd" style="padding:1.6rem 1.5rem;">
+            <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:1rem;">
+                <div style="width:60px;height:60px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-ban" style="font-size:1.6rem;color:#dc2626;"></i>
+                </div>
+                <div>
+                    <p style="font-weight:700;font-size:1rem;color:#1a1a1a;margin:0 0 0.4rem;">Are you sure?</p>
+                    <p id="revokeOrgName" style="font-size:0.9rem;color:#6b7280;margin:0 0 0.6rem;"></p>
+                    <p style="font-size:0.82rem;color:#9ca3af;margin:0;line-height:1.5;">This will remove their system access immediately. They will need to be re-granted access to use the platform again.</p>
+                </div>
+            </div>
+        </div>
+        <div class="ar-modal-ft" style="justify-content:center;gap:0.75rem;">
+            <button class="ar-mbtn cancel" style="min-width:110px;" onclick="closeRevokeModal()">
+                <i class="fas fa-arrow-left"></i> Cancel
+            </button>
+            <button class="ar-mbtn do-reject" style="min-width:140px;" id="revokeConfirmBtn" onclick="confirmRevoke()">
+                <i class="fas fa-ban"></i> Yes, Revoke
+            </button>
         </div>
     </div>
 </div>
@@ -674,25 +743,98 @@ function closePreview() {
 }
 
 // Grant / revoke
+var _revokeOrgId = null, _revokeBtn = null;
+
+// Grant / revoke
+var _revokeOrgId = null, _revokeBtn = null;
+var _grantOrgId  = null, _grantBtn  = null;
+
 function toggleAccred(orgId, grant, btn) {
-    if (!confirm(grant ? 'Grant full system access to this organization?' : 'Revoke this organization\'s accreditation?')) return;
+    var orgName = btn.closest('.org-card').querySelector('.org-name').textContent.trim();
+    if (grant) {
+        _grantOrgId  = orgId;
+        _grantBtn    = btn;
+        document.getElementById('grantOrgName').textContent = 'Organization: ' + orgName;
+        document.getElementById('grantConfirmBtn').disabled = false;
+        document.getElementById('grantConfirmBtn').innerHTML = '<i class="fas fa-unlock"></i> Yes, Grant Access';
+        document.getElementById('grantModalBg').classList.add('open');
+    } else {
+        _revokeOrgId = orgId;
+        _revokeBtn   = btn;
+        document.getElementById('revokeOrgName').textContent = 'Organization: ' + orgName;
+        document.getElementById('revokeConfirmBtn').disabled = false;
+        document.getElementById('revokeConfirmBtn').innerHTML = '<i class="fas fa-ban"></i> Yes, Revoke';
+        document.getElementById('revokeModalBg').classList.add('open');
+    }
+}
+
+function closeGrantModal() {
+    document.getElementById('grantModalBg').classList.remove('open');
+    _grantOrgId = null; _grantBtn = null;
+}
+
+function confirmGrant() {
+    if (!_grantOrgId) return;
+    var btn = document.getElementById('grantConfirmBtn');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Granting…';
     var fd = new FormData();
-    fd.append('action', grant?'grant':'revoke'); fd.append('org_id', orgId);
+    fd.append('action', 'grant'); fd.append('org_id', _grantOrgId);
+    fetch('accreditation_review_action.php', {method:'POST', body:fd})
+    .then(function(r){return r.json();})
+    .then(function(d) {
+        if (d.success) {
+            toast(d.message, true);
+            closeGrantModal();
+            setTimeout(function(){location.reload();}, 900);
+        } else {
+            toast(d.message||'Error.', false);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-unlock"></i> Yes, Grant Access';
+        }
+    }).catch(function(e){
+        toast('Error: '+e.message, false);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-unlock"></i> Yes, Grant Access';
+    });
+}
+
+function closeRevokeModal() {
+    document.getElementById('revokeModalBg').classList.remove('open');
+    _revokeOrgId = null; _revokeBtn = null;
+}
+
+function confirmRevoke() {
+    if (!_revokeOrgId) return;
+    var btn = document.getElementById('revokeConfirmBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Revoking…';
+    var fd = new FormData();
+    fd.append('action','revoke'); fd.append('org_id', _revokeOrgId);
     fetch('accreditation_review_action.php',{method:'POST',body:fd})
     .then(function(r){return r.json();})
     .then(function(d) {
-        if (d.success) { toast(d.message,true); setTimeout(function(){location.reload();},900); }
-        else { toast(d.message||'Error.',false); btn.disabled=false; btn.innerHTML = grant?'<i class="fas fa-unlock"></i> Grant Access':'<i class="fas fa-ban"></i> Revoke'; }
-    }).catch(function(e){toast('Error: '+e.message,false);btn.disabled=false;});
+        if (d.success) {
+            toast(d.message, true);
+            closeRevokeModal();
+            setTimeout(function(){location.reload();}, 900);
+        } else {
+            toast(d.message||'Error.',false);
+            btn.disabled=false;
+            btn.innerHTML='<i class="fas fa-ban"></i> Yes, Revoke';
+        }
+    }).catch(function(e){
+        toast('Error: '+e.message,false);
+        btn.disabled=false;
+        btn.innerHTML='<i class="fas fa-ban"></i> Yes, Revoke';
+    });
 }
 
 // Backdrop / Escape
-['arReviewBg','arPreviewBg'].forEach(function(id){
-    document.getElementById(id).addEventListener('click',function(e){if(e.target===this){closeReview();closePreview();}});
+['arReviewBg','arPreviewBg','revokeModalBg','grantModalBg'].forEach(function(id){
+    document.getElementById(id).addEventListener('click',function(e){if(e.target===this){closeReview();closePreview();closeRevokeModal();closeGrantModal();}});
 });
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeReview();closePreview();}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeReview();closePreview();closeRevokeModal();closeGrantModal();}});
 
 // Toast
 function toast(msg,ok){
